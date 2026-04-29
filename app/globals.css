@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+:root {
+  --background: #050505;
+  --foreground: #ededed;
+  
+  /* Easing curves from web-animation-design */
+  --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+@theme {
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  /* Register the fonts as utilities */
+  --font-roboto: var(--font-roboto);
+  --font-inter: var(--font-inter);
+  --font-test: var(--font-next-test);
+  
+  /* Set defaults and aliases */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-secondary: var(--font-roboto);
+
+  /* Custom ease curves for tailwind 4 */
+  --ease-out-cubic: var(--ease-out-cubic);
+  --ease-out-quint: var(--ease-out-quint);
+  --ease-in-out-cubic: var(--ease-in-out-cubic);
+  --font-jersey: var(--font-next-jersey);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+  /* subtle radial gradient for premium feel */
+  background-image: radial-gradient(circle at 50% 0%, #1a1a24 0%, #050505 50%);
+  background-attachment: fixed;
+}
+
+/* Glassmorphism utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* For Framer Motion reduced motion handling */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
