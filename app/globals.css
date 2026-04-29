@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050505;
-  --foreground: #ededed;
+  --background: #030305;
+  --foreground: #f8fafc;
   
   /* Easing curves from web-animation-design */
   --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
@@ -10,15 +10,14 @@
   --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
-@theme {
-
+@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   
   /* Register the fonts as utilities */
   --font-roboto: var(--font-roboto);
   --font-inter: var(--font-inter);
-  --font-test: var(--font-next-test);
+  --font-jersey: var(--font-next-jersey);
   
   /* Set defaults and aliases */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -29,29 +28,33 @@
   --ease-out-cubic: var(--ease-out-cubic);
   --ease-out-quint: var(--ease-out-quint);
   --ease-in-out-cubic: var(--ease-in-out-cubic);
-  --font-jersey: var(--font-next-jersey);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   min-height: 100vh;
-  /* subtle radial gradient for premium feel */
-  background-image: radial-gradient(circle at 50% 0%, #1a1a24 0%, #050505 50%);
+  /* Deep, layered radial gradient for platform feel */
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(79, 70, 229, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 0% 0%, rgba(30, 27, 75, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(15, 23, 42, 0.5) 0%, #030305 100%);
   background-attachment: fixed;
 }
 
 /* Glassmorphism utilities */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1);
 }
 
 .glass-panel:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px -1px rgba(0, 0, 0, 0.2);
 }
 
 /* For Framer Motion reduced motion handling */
@@ -62,4 +65,9 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+::selection {
+  background: rgba(79, 70, 229, 0.3);
+  color: #fff;
 }

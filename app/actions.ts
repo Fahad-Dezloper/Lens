@@ -12,9 +12,16 @@ export type RepoContribution = {
   latestPrDate: string;
 };
 
+export type UserProfile = {
+  login: string;
+  avatarUrl: string;
+  htmlUrl: string;
+};
+
 export type ActionResponse = {
   success: boolean;
   data?: RepoContribution[];
+  user?: UserProfile;
   error?: string;
   totalPrs?: number;
 };
@@ -35,11 +42,14 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
             'Accept': 'application/vnd.github.v3+json',
             'User-Agent': 'Github-Contributions-Viewer'
           },
-          next: { revalidate: 3600 } // Cache for an hour
+          next: { revalidate: 3600 }
         }
       );
 
       if (!res.ok) {
+        if (res.status === 403 || res.status === 429) {
+          throw new Error('RATE_LIMIT');
+        }
         throw new Error(`GitHub API error: ${res.status}`);
       }
 
@@ -51,8 +61,19 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
     let items = firstPageData.items || [];
     const totalCount = firstPageData.total_count || 0;
 
-    // Fetch up to 3 pages total (300 PRs max) to balance comprehensiveness and API rate limits
-    const MAX_PAGES = 3;
+    // Get user profile from the first PR item
+    let userProfile: UserProfile | undefined;
+    if (items.length > 0) {
+      const user = items[0].user;
+      userProfile = {
+        login: user.login,
+        avatarUrl: user.avatar_url,
+        htmlUrl: user.html_url
+      };
+    }
+
+    // Scale optimization: Fetch up to 5 pages (500 PRs) to balance depth vs speed/limits
+    const MAX_PAGES = 5;
     const totalPages = Math.min(Math.ceil(totalCount / 100), MAX_PAGES);
 
     if (totalPages > 1) {
@@ -61,7 +82,7 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
         pagePromises.push(
           fetchPage(i).catch(e => {
             console.error(`Failed to fetch page ${i}`, e);
-            return { items: [] }; // Graceful degradation if a single page fails
+            return { items: [] };
           })
         );
       }
@@ -72,12 +93,11 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
       }
     }
 
-    // Map contributions by repository
     const repoMap = new Map<string, RepoContribution>();
 
     for (const item of items) {
       const repoApiUrl = item.repository_url as string;
-      const id = repoApiUrl.replace('https://api.github.com/repos/', ''); // e.g. "facebook/react"
+      const id = repoApiUrl.replace('https://api.github.com/repos/', ''); 
       const owner = id.split('/')[0];
       const isExternal = owner.toLowerCase() !== cleanUsername;
       const repoUrl = `https://github.com/${id}`;
@@ -85,7 +105,6 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
       if (repoMap.has(id)) {
         const existing = repoMap.get(id)!;
         existing.prCount += 1;
-        // Keep the latest PR info
         if (new Date(item.created_at) > new Date(existing.latestPrDate)) {
           existing.latestPrTitle = item.title;
           existing.latestPrUrl = item.html_url;
@@ -106,17 +125,20 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
       }
     }
 
-    // Convert map to array and sort by PR count (descending)
     const sortedContributions = Array.from(repoMap.values()).sort((a, b) => b.prCount - a.prCount);
 
     return { 
       success: true, 
       data: sortedContributions, 
+      user: userProfile,
       totalPrs: totalCount 
     };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching contributions:', error);
-    return { success: false, error: 'Failed to fetch data from GitHub. Rate limit may have been exceeded.' };
+    if (error.message === 'RATE_LIMIT') {
+      return { success: false, error: 'GitHub API rate limit exceeded. Please try again in a few minutes.' };
+    }
+    return { success: false, error: 'Failed to fetch data from GitHub. The user might have no public contributions or the API is unavailable.' };
   }
 }
