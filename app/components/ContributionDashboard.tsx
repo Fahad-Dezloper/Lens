@@ -5,9 +5,11 @@ import { getOpenSourceContributions, searchUsers, RepoContribution, UserProfile 
 import { 
   Search, Loader2, GitPullRequest, AlertCircle, 
   LayoutGrid, Globe, User, ExternalLink, Code2,
-  TrendingUp, Layers, Milestone, UserCircle
+  TrendingUp, Layers, Milestone, UserCircle,
+  MapPin, Building2, Users, Award, Calendar, ChevronRight
 } from 'lucide-react';
 import { RepoCard } from './RepoCard';
+import { motion } from "motion/react"
 
 type FilterType = 'all' | 'external' | 'owned';
 
@@ -99,27 +101,91 @@ export function ContributionDashboard() {
   ];
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-12 px-4 sm:px-6">
-      <div className="flex flex-col items-center justify-center space-y-8 pt-16 lg:pt-32">
+    <div className="w-full ">
+
+      <div className='flex justify-between mb-8 items-center w-full'>
+          <p className="text-zinc-500 text-lg md:text-xl font-light leading-tight">
+            Track people's open source contributions.
+          </p>
+
+ <form 
+          onSubmit={(e) => handleSubmit(e)}
+          className="w-full max-w-md relative group"
+          ref={searchRef}
+        >
+          <div className="relative flex items-center bg-card border border-border pr-4 pl-2 rounded-sm focus-within:border-primary/40 transition-all duration-500 shadow-sm z-50">
+            <div className="pl-2 pr-4">
+              <Search className="w-5 h-5 text-zinc-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Enter GitHub username..."
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              onFocus={() => username.length >= 2 && setShowSuggestions(true)}
+              className="w-full bg-transparent border-none outline-none text-zinc-900 text-lg py-2 placeholder:text-zinc-300"
+              spellCheck={false}
+            />
+            {/* <button
+              type="submit"
+              disabled={loading || !username.trim()}
+              className="bg-primary hover:bg-primary/90 whitespace-nowrap text-primary-foreground px-4 py-2 rounded-sm font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center shadow-lg shadow-primary/20"
+            >
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Fetch'}
+            </button> */}
+
+            <kbd className="bg-muted pointer-events-none hidden h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none sm:flex"><span className="text-xs">⌘</span>F</kbd>
+          </div>
+
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-3xl shadow-xl overflow-hidden z-40">
+              <div className="p-2">
+                {suggestions.map((suggestion) => (
+                  <button
+                    key={suggestion.login}
+                    type="button"
+                    onClick={() => handleSubmit(undefined, suggestion.login)}
+                    className="w-full flex items-center gap-3 p-3 hover:bg-zinc-50 rounded-2xl transition-colors group text-left"
+                  >
+                    <img 
+                      src={suggestion.avatarUrl} 
+                      alt={suggestion.login} 
+                      className="w-10 h-10 rounded-full border border-zinc-200"
+                    />
+                    <div className="flex-1">
+                      <p className="text-zinc-900 font-semibold">{suggestion.login}</p>
+                      <p className="text-zinc-400 text-xs">View contributions</p>
+                    </div>
+                    <UserCircle className="w-5 h-5 text-zinc-300 group-hover:text-indigo-500 transition-colors" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </form>
+
+      </div>
+
+      {/* <motion.div className="flex flex-col items-center space-y-8 mb-12 pt-16 lg:pt-14">
         
         <div className="text-center space-y-4">
           <h1 
-            className="font-pixel text-5xl md:text-7xl  font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-zinc-900 via-zinc-800 to-zinc-600"
+            className="font-pixel text-5xl md:text-7xl  font-bold tracking-tighter dark:text-[#FDFBF2]"
           >
            Open Source Contributions
           </h1>
           <p className="text-zinc-500 text-lg md:text-xl max-w-2xl mx-auto font-light leading-tight">
-            Track people's open source contributions. <br /> Bringing peace through code.
+            Track people's open source contributions.
           </p>
         </div>
 
         <form 
           onSubmit={(e) => handleSubmit(e)}
-          className="w-full max-w-xl relative group"
+          className="w-full max-w-lg relative group"
           ref={searchRef}
         >
-          <div className="relative flex items-center bg-card border border-border rounded-[2rem] p-1.5 focus-within:border-primary/40 transition-all duration-500 shadow-sm z-50">
-            <div className="pl-4 pr-2">
+          <div className="relative flex items-center bg-card border border-border rounded-sm p-1 focus-within:border-primary/40 transition-all duration-500 shadow-sm z-50">
+            <div className="pl-2 pr-4">
               <Search className="w-5 h-5 text-zinc-400" />
             </div>
             <input
@@ -134,9 +200,9 @@ export function ContributionDashboard() {
             <button
               type="submit"
               disabled={loading || !username.trim()}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 rounded-full font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center shadow-lg shadow-primary/20"
+              className="bg-primary hover:bg-primary/90 whitespace-nowrap text-primary-foreground px-4 py-2 rounded-sm font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center shadow-lg shadow-primary/20"
             >
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Analyze'}
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Fetch'}
             </button>
           </div>
 
@@ -166,7 +232,7 @@ export function ContributionDashboard() {
             </div>
           )}
         </form>
-      </div>
+      </motion.div> */}
 
       {error && (
         <div className="flex items-center gap-3 text-red-400 bg-red-400/5 px-6 py-4 rounded-2xl border border-red-400/10 max-w-lg mx-auto">
@@ -176,33 +242,161 @@ export function ContributionDashboard() {
       )}
 
       {data && user && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div className="lg:col-span-4 glass-panel rounded-[2rem] p-8 flex flex-col items-center text-center space-y-6">
+        <div className="flex gap-6">
+          <div className='flex flex-col gap-6 w-[35vw]'>
+            <div className="lg:col-span-4 glass-panel rounded-[2.5rem] p-8 flex flex-col items-center text-center space-y-6 relative overflow-hidden group">
+              {/* Background gradient effect */}
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500" />
+              
               <div className="relative group">
-                <div className="absolute inset-0 bg-indigo-500 rounded-full blur-xl opacity-10 group-hover:opacity-20 transition-opacity" />
+                <div className="absolute inset-0 bg-indigo-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-700" />
                 <img 
                   src={user.avatarUrl} 
                   alt={user.login}
-                  className="w-24 h-24 rounded-full border-2 border-white relative z-10 shadow-md"
+                  className="w-32 h-32 rounded-full border-4 border-white relative z-10 shadow-2xl transition-transform duration-700 group-hover:scale-105"
                 />
               </div>
-              <div className="space-y-1">
-                <h2 className="text-2xl font-bold text-zinc-900">{user.login}</h2>
+
+              <div className="space-y-3 w-full">
+                <div className="space-y-1">
+                  {user.name && <h1 className="text-3xl font-black text-zinc-900 tracking-tight leading-none">{user.name}</h1>}
+                  <h2 className="text-xl font-medium text-zinc-500">@{user.login}</h2>
+                </div>
+
+                {user.bio && (
+                  <p className="text-sm text-zinc-600 leading-relaxed max-w-xs mx-auto italic px-4">
+                    "{user.bio}"
+                  </p>
+                )}
+
+                <div className="flex flex-col items-center gap-2 pt-2">
                   <a 
                     href={user.htmlUrl} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-zinc-400 hover:text-indigo-600 transition-colors flex items-center justify-center gap-1.5 text-sm"
+                    className="group/link text-zinc-400 hover:text-indigo-600 transition-all flex items-center justify-center gap-1.5 text-sm font-medium bg-zinc-50 hover:bg-indigo-50 px-4 py-2 rounded-full border border-zinc-100 hover:border-indigo-100"
                   >
                     <Code2 className="w-4 h-4" />
                     github.com/{user.login}
-                    <ExternalLink className="w-3 h-3" />
+                    <ExternalLink className="w-3 h-3 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
                   </a>
+                </div>
               </div>
-              <div className="flex flex-wrap justify-center gap-2 pt-2">
-                <span className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-xs font-semibold text-indigo-400 uppercase tracking-wider">
-                  Open Source Explorer
-                </span>
+
+              {/* Profile Metadata */}
+              <div className="grid grid-cols-2 gap-4 w-full pt-4 border-t border-zinc-100/50">
+                {user.location && (
+                  <div className="flex items-center gap-2 text-xs text-zinc-500 justify-center">
+                    <MapPin className="w-3.5 h-3.5 text-indigo-400" />
+                    <span className="truncate">{user.location}</span>
+                  </div>
+                )}
+                {user.company && (
+                  <div className="flex items-center gap-2 text-xs text-zinc-500 justify-center">
+                    <Building2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="truncate">{user.company}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 text-xs text-zinc-500 justify-center">
+                  <Users className="w-3.5 h-3.5 text-amber-400" />
+                  <span>{user.followers?.toLocaleString()} followers</span>
+                </div>
+                {user.createdAt && (
+                  <div className="flex items-center gap-2 text-xs text-zinc-500 justify-center">
+                    <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>Joined {new Date(user.createdAt).getFullYear()}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Organizations */}
+              {user.organizations && user.organizations.length > 0 && (
+                <div className="w-full space-y-3 pt-4 border-t border-zinc-100/50">
+                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 px-2">
+                    <Building2 className="w-3 h-3" />
+                    Organizations
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-3 px-2">
+                    {user.organizations.map((org) => (
+                      <a 
+                        key={org.login}
+                        href={`https://github.com/${org.login}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group/org relative"
+                        title={org.login}
+                      >
+                        <div className="absolute -inset-1 bg-indigo-500/20 rounded-lg blur opacity-0 group-hover/org:opacity-100 transition-opacity" />
+                        <img 
+                          src={org.avatarUrl} 
+                          alt={org.login}
+                          className="w-10 h-10 rounded-lg border border-zinc-100 bg-white relative z-10 transition-transform group-hover/org:scale-110"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* GitHub Achievements */}
+              {user.achievements && user.achievements.length > 0 && (
+                <div className="w-full space-y-3 pt-4 border-t border-zinc-100/50">
+                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 px-2">
+                    <Award className="w-3 h-3" />
+                    Achievements
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-4 px-2">
+                    {user.achievements.map((achievement) => (
+                      <div key={achievement.name} className="relative group/achievement" title={achievement.name}>
+                        <div className="absolute inset-0 bg-indigo-500/10 rounded-full blur-md opacity-0 group-hover/achievement:opacity-100 transition-opacity" />
+                        <img 
+                          src={achievement.iconUrl} 
+                          alt={achievement.name}
+                          className="w-14 h-14 relative z-10 transition-transform duration-500 group-hover/achievement:scale-115 group-hover/achievement:-rotate-6"
+                        />
+                        {achievement.count && achievement.count > 1 && (
+                          <span className="absolute -bottom-1 -right-1 bg-zinc-900 text-white text-[10px] font-black px-2 py-0.5 rounded-full border-2 border-white shadow-lg z-20">
+                            x{achievement.count}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Achievement Highlights (Derived) */}
+              <div className="w-full space-y-3 pt-4 border-t border-zinc-100/50">
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 px-2">
+                  <div className="w-3 h-3 rounded-full border border-zinc-300 flex items-center justify-center">
+                    <div className="w-1 h-1 bg-zinc-400 rounded-full" />
+                  </div>
+                  System Highlights
+                </p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  <span className="px-3 py-1.5 bg-indigo-500/5 border border-indigo-500/10 rounded-full text-[10px] font-bold text-indigo-500 uppercase tracking-tighter flex items-center gap-1.5 shadow-sm">
+                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                    OSS Explorer
+                  </span>
+                  {totalPrs && totalPrs > 100 && (
+                    <span className="px-3 py-1.5 bg-emerald-500/5 border border-emerald-500/10 rounded-full text-[10px] font-bold text-emerald-500 uppercase tracking-tighter flex items-center gap-1.5 shadow-sm">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      Heavy Hitter
+                    </span>
+                  )}
+                  {user.followers && user.followers > 1000 && (
+                    <span className="px-3 py-1.5 bg-amber-500/5 border border-amber-500/10 rounded-full text-[10px] font-bold text-amber-500 uppercase tracking-tighter flex items-center gap-1.5 shadow-sm">
+                      <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                      Influencer
+                    </span>
+                  )}
+                  {user.createdAt && new Date(user.createdAt).getFullYear() <= 2015 && (
+                    <span className="px-3 py-1.5 bg-purple-500/5 border border-purple-500/10 rounded-full text-[10px] font-bold text-purple-500 uppercase tracking-tighter flex items-center gap-1.5 shadow-sm">
+                      <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                      OSS Veteran
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -229,9 +423,10 @@ export function ContributionDashboard() {
                 delay={0.4} 
               />
             </div>
+            </div>
 
-            <div className="lg:col-span-12 space-y-8">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8">
+            {/* <div className="space-y-8">
+              <div className="flex flex-col md:items-center justify-between gap-6 border-b border-white/5 pb-8">
                 <div className="flex p-1.5 space-x-1 bg-white/5 rounded-2xl border border-white/5 w-fit">
                   {tabs.map((tab) => {
                     const Icon = tab.icon;
@@ -268,7 +463,7 @@ export function ContributionDashboard() {
 
               <div className="min-h-[400px]">
                 {filteredData.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {filteredData.map((repo, index) => (
                       <RepoCard key={repo.id} repo={repo} index={index} />
                     ))}
@@ -286,6 +481,19 @@ export function ContributionDashboard() {
                 )}
               </div>
             </div>
+
+             */}
+
+             <div className='w-full bg-red-400 grid grid-cols-2 gap-2 h-fit'>
+              {/* {[1, 2, 3, 4, 5, 6].map((item, index) => {
+              
+}}) */}
+
+                {[1, 2, 3, 4].map((item, index) => {
+                  return <div key={index} className='w-full bg-blue-500 h-[25vh]'>hi there</div>
+                })}
+              {/* <div className=''></div> */}
+             </div>
           </div>
         )}
       </div>

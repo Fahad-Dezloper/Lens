@@ -175,3 +175,10 @@ body {
     @apply font-sans;
   }
 }
+
+.scrolll {
+  overflow-y: auto;
+}
+.scrolll::-webkit-scrollbar{
+  display: none;
+}

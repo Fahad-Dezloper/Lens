@@ -42,7 +42,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
         <Topbar />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 scrolll">
           {children}
         </main>
         <Footer />
