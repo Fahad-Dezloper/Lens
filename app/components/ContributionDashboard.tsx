@@ -118,7 +118,7 @@ export function ContributionDashboard() {
           className="w-full max-w-xl relative group"
           ref={searchRef}
         >
-          <div className="relative flex items-center bg-white border border-zinc-200 rounded-[2rem] p-1.5 focus-within:border-indigo-500/40 transition-all duration-500 shadow-sm z-50">
+          <div className="relative flex items-center bg-card border border-border rounded-[2rem] p-1.5 focus-within:border-primary/40 transition-all duration-500 shadow-sm z-50">
             <div className="pl-4 pr-2">
               <Search className="w-5 h-5 text-zinc-400" />
             </div>
@@ -134,14 +134,14 @@ export function ContributionDashboard() {
             <button
               type="submit"
               disabled={loading || !username.trim()}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-full font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center shadow-lg shadow-indigo-500/20"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 rounded-full font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center shadow-lg shadow-primary/20"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Analyze'}
             </button>
           </div>
 
           {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-zinc-200 rounded-3xl shadow-xl overflow-hidden z-40">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-3xl shadow-xl overflow-hidden z-40">
               <div className="p-2">
                 {suggestions.map((suggestion) => (
                   <button

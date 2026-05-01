@@ -3,11 +3,11 @@ import { ModeToggle } from './ThemeToggler'
 
 const Topbar = () => {
   return (
-    <div className='w-full p-4 bg-red-400 flex justify-between'>
-        <h1 className='font-pixel font-black tracking-widest'>GITLENS</h1>
-        <div className='flex gap-2 items-center'>
-            <span>Github</span>
-            <span>Build by X</span>
+    <div className='w-full p-4 bg-header-footer border-b border-border flex justify-between items-center'>
+        <h1 className='font-pixel font-black tracking-widest text-primary leading-0'>GITLENS</h1>
+        <div className='flex gap-4 items-center'>
+            <span className="text-sm text-muted-foreground">Github</span>
+            <span className="text-sm text-muted-foreground">Build by X</span>
             <ModeToggle />
         </div>
     </div>
