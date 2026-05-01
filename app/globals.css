@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #030305;
-  --foreground: #f8fafc;
+  --background: #FFFDF3;
+  --foreground: #1a1a1a;
+
+  /* Explicitly define font variables for theme tokens */
+  --font-body: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-pixel: var(--font-geist-pixel-square);
   
   /* Easing curves from web-animation-design */
   --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
@@ -14,15 +19,10 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   
-  /* Register the fonts as utilities */
-  --font-roboto: var(--font-roboto);
-  --font-inter: var(--font-inter);
-  --font-jersey: var(--font-next-jersey);
-  
-  /* Set defaults and aliases */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
-  --font-secondary: var(--font-roboto);
+  /* Register Geist fonts as theme tokens */
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-pixel: var(--font-pixel);
 
   /* Custom ease curves for tailwind 4 */
   --ease-out-cubic: var(--ease-out-cubic);
@@ -34,27 +34,26 @@ body {
   background: var(--background);
   color: var(--foreground);
   min-height: 100vh;
-  /* Deep, layered radial gradient for platform feel */
+  /* Soft, warm ambient light for the new background */
   background-image: 
-    radial-gradient(circle at 50% 0%, rgba(79, 70, 229, 0.1) 0%, transparent 40%),
-    radial-gradient(circle at 0% 0%, rgba(30, 27, 75, 0.2) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(15, 23, 42, 0.5) 0%, #030305 100%);
+    radial-gradient(circle at 50% -20%, rgba(79, 70, 229, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.02) 0%, transparent 40%);
   background-attachment: fixed;
 }
 
-/* Glassmorphism utilities */
+/* Glassmorphism utilities - Adjusted for light theme */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.04);
 }
 
 .glass-panel:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 8px 32px -1px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 32px -1px rgba(0, 0, 0, 0.08);
 }
 
 /* For Framer Motion reduced motion handling */

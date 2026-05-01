@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useMemo } from 'react';
-import { getOpenSourceContributions, RepoContribution, UserProfile } from '../actions';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState, useMemo, useRef } from 'react';
+import { getOpenSourceContributions, searchUsers, RepoContribution, UserProfile } from '../actions';
 import { 
   Search, Loader2, GitPullRequest, AlertCircle, 
   LayoutGrid, Globe, User, ExternalLink, Code2,
-  TrendingUp, Layers, Milestone
+  TrendingUp, Layers, Milestone, UserCircle
 } from 'lucide-react';
 import { RepoCard } from './RepoCard';
 
@@ -20,10 +19,40 @@ export function ContributionDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterType>('all');
   const [totalPrs, setTotalPrs] = useState<number | null>(null);
+  const [suggestions, setSuggestions] = useState<UserProfile[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLFormElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!username.trim()) return;
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (username.length >= 2 && !loading) {
+        const result = await searchUsers(username);
+        if (result.success && result.users) {
+          setSuggestions(result.users);
+          setShowSuggestions(true);
+        }
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [username, loading]);
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSubmit = async (e?: React.FormEvent, selectedUsername?: string) => {
+    if (e) e.preventDefault();
+    const finalUsername = selectedUsername || username;
+    if (!finalUsername.trim()) return;
     
     setLoading(true);
     setError(null);
@@ -31,8 +60,11 @@ export function ContributionDashboard() {
     setUser(null);
     setFilter('all');
     setTotalPrs(null);
+    setSuggestions([]);
+    setShowSuggestions(false);
+    if (selectedUsername) setUsername(selectedUsername);
     
-    const result = await getOpenSourceContributions(username.trim());
+    const result = await getOpenSourceContributions(finalUsername.trim());
     if (result.success && result.data) {
       setData(result.data);
       setUser(result.user || null);
@@ -70,52 +102,35 @@ export function ContributionDashboard() {
     <div className="w-full max-w-6xl mx-auto space-y-12 px-4 sm:px-6">
       {/* Platform Header */}
       <div className="flex flex-col items-center justify-center space-y-8 pt-16 lg:pt-32">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          className="relative"
-        >
-          <div className="absolute inset-0 bg-indigo-500/20 blur-3xl rounded-full" />
-          <div className="relative bg-white/5 p-5 rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-sm">
-            <GitPullRequest className="w-14 h-14 text-indigo-400" />
-          </div>
-        </motion.div>
         
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1, ease: [0.215, 0.61, 0.355, 1] }}
-          className="text-center space-y-4"
-        >
+        <div className="text-center space-y-4">
           <h1 
-            className="font-jersey text-5xl md:text-7xl tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/40"
+            className="font-pixel text-5xl md:text-7xl  font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-zinc-900 via-zinc-800 to-zinc-600"
           >
-            OSS Platform
+           Open Source Contributions
           </h1>
-          <p className="text-white/40 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
-            The professional dashboard for open-source impact. Track, filter, and analyze code contributions across the global ecosystem.
+          <p className="text-zinc-500 text-lg md:text-xl max-w-2xl mx-auto font-light leading-tight">
+            Track people's open source contributions. <br /> Bringing peace through code.
           </p>
-        </motion.div>
+        </div>
 
-        <motion.form 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: [0.215, 0.61, 0.355, 1] }}
-          onSubmit={handleSubmit}
+        <form 
+          onSubmit={(e) => handleSubmit(e)}
           className="w-full max-w-xl relative group"
+          ref={searchRef}
         >
-          <div className="absolute inset-0 bg-indigo-500/10 blur-2xl rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-700" />
-          <div className="relative flex items-center bg-white/5 border border-white/10 rounded-[2rem] p-1.5 focus-within:border-indigo-500/40 focus-within:bg-white/10 transition-all duration-500 backdrop-blur-md">
+          {/* <div className="absolute inset-0 bg-indigo-500/5 blur-2xl rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-700" /> */}
+          <div className="relative flex items-center bg-white border border-zinc-200 rounded-[2rem] p-1.5 focus-within:border-indigo-500/40 transition-all duration-500 shadow-sm z-50">
             <div className="pl-4 pr-2">
-              <Search className="w-5 h-5 text-white/30" />
+              <Search className="w-5 h-5 text-zinc-400" />
             </div>
             <input
               type="text"
               placeholder="Enter GitHub username..."
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full bg-transparent border-none outline-none text-white text-lg py-3 placeholder:text-white/20"
+              onFocus={() => username.length >= 2 && setShowSuggestions(true)}
+              className="w-full bg-transparent border-none outline-none text-zinc-900 text-lg py-3 placeholder:text-zinc-300"
               spellCheck={false}
             />
             <button
@@ -126,49 +141,63 @@ export function ContributionDashboard() {
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Analyze'}
             </button>
           </div>
-        </motion.form>
+
+          {/* Suggestions Dropdown */}
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-zinc-200 rounded-3xl shadow-xl overflow-hidden z-40">
+              <div className="p-2">
+                {suggestions.map((suggestion) => (
+                  <button
+                    key={suggestion.login}
+                    type="button"
+                    onClick={() => handleSubmit(undefined, suggestion.login)}
+                    className="w-full flex items-center gap-3 p-3 hover:bg-zinc-50 rounded-2xl transition-colors group text-left"
+                  >
+                    <img 
+                      src={suggestion.avatarUrl} 
+                      alt={suggestion.login} 
+                      className="w-10 h-10 rounded-full border border-zinc-200"
+                    />
+                    <div className="flex-1">
+                      <p className="text-zinc-900 font-semibold">{suggestion.login}</p>
+                      <p className="text-zinc-400 text-xs">View contributions</p>
+                    </div>
+                    <UserCircle className="w-5 h-5 text-zinc-300 group-hover:text-indigo-500 transition-colors" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </form>
       </div>
 
-      <AnimatePresence mode="wait">
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="flex items-center gap-3 text-red-400 bg-red-400/5 px-6 py-4 rounded-2xl border border-red-400/10 max-w-lg mx-auto"
-          >
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
-            <p className="text-sm font-medium">{error}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {error && (
+        <div className="flex items-center gap-3 text-red-400 bg-red-400/5 px-6 py-4 rounded-2xl border border-red-400/10 max-w-lg mx-auto">
+          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          <p className="text-sm font-medium">{error}</p>
+        </div>
+      )}
 
       {/* User Stats Summary */}
-      <AnimatePresence>
-        {data && user && (
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
-            className="grid grid-cols-1 lg:grid-cols-12 gap-8"
-          >
+      {data && user && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* User Profile Card */}
             <div className="lg:col-span-4 glass-panel rounded-[2rem] p-8 flex flex-col items-center text-center space-y-6">
               <div className="relative group">
-                <div className="absolute inset-0 bg-indigo-500 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
+                <div className="absolute inset-0 bg-indigo-500 rounded-full blur-xl opacity-10 group-hover:opacity-20 transition-opacity" />
                 <img 
                   src={user.avatarUrl} 
                   alt={user.login}
-                  className="w-24 h-24 rounded-full border-2 border-white/10 relative z-10"
+                  className="w-24 h-24 rounded-full border-2 border-white relative z-10 shadow-md"
                 />
               </div>
               <div className="space-y-1">
-                <h2 className="text-2xl font-bold text-white">{user.login}</h2>
+                <h2 className="text-2xl font-bold text-zinc-900">{user.login}</h2>
                   <a 
                     href={user.htmlUrl} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-white/40 hover:text-indigo-400 transition-colors flex items-center justify-center gap-1.5 text-sm"
+                    className="text-zinc-400 hover:text-indigo-600 transition-colors flex items-center justify-center gap-1.5 text-sm"
                   >
                     <Code2 className="w-4 h-4" />
                     github.com/{user.login}
@@ -219,19 +248,17 @@ export function ContributionDashboard() {
                         key={tab.id}
                         onClick={() => setFilter(tab.id as FilterType)}
                         className={`relative px-6 py-2.5 text-sm font-semibold rounded-[0.85rem] transition-all outline-none flex items-center gap-3
-                          ${isActive ? 'text-white' : 'text-white/40 hover:text-white/70'}`}
+                          ${isActive ? 'text-zinc-900' : 'text-zinc-400 hover:text-zinc-600'}`}
                       >
                         {isActive && (
-                          <motion.div
-                            layoutId="platformActiveTab"
-                            className="absolute inset-0 bg-white/5 border border-white/10 rounded-[0.85rem] shadow-inner"
-                            transition={{ type: "spring", bounce: 0.15, duration: 0.6 }}
+                          <div
+                            className="absolute inset-0 bg-white border border-zinc-200 rounded-[0.85rem] shadow-sm"
                           />
                         )}
-                        <Icon className={`w-4 h-4 relative z-10 ${isActive ? 'text-indigo-400' : ''}`} />
+                        <Icon className={`w-4 h-4 relative z-10 ${isActive ? 'text-indigo-600' : ''}`} />
                         <span className="relative z-10">{tab.label}</span>
                         {tab.count !== undefined && (
-                          <span className={`relative z-10 px-1.5 py-0.5 rounded-md text-[10px] ${isActive ? 'bg-indigo-500/20 text-indigo-300' : 'bg-white/5 text-white/30'}`}>
+                          <span className={`relative z-10 px-1.5 py-0.5 rounded-md text-[10px] ${isActive ? 'bg-indigo-50 text-white' : 'bg-zinc-100 text-zinc-500'}`}>
                             {tab.count}
                           </span>
                         )}
@@ -240,51 +267,36 @@ export function ContributionDashboard() {
                   })}
                 </div>
                 
-                <div className="text-sm font-medium text-white/30">
-                  Showing <span className="text-white">{filteredData.length}</span> contributions 
-                  in <span className="text-white">{filter === 'all' ? 'total' : filter}</span> category
+                <div className="text-sm font-medium text-zinc-400">
+                  Showing <span className="text-zinc-900">{filteredData.length}</span> contributions 
+                  in <span className="text-zinc-900">{filter === 'all' ? 'total' : filter}</span> category
                 </div>
               </div>
 
-              <motion.div layout className="min-h-[400px]">
-                <AnimatePresence mode="popLayout">
-                  {filteredData.length > 0 ? (
-                    <motion.div 
-                      key={filter}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                    >
-                      {filteredData.map((repo, index) => (
-                        <RepoCard key={repo.id} repo={repo} index={index} />
-                      ))}
-                    </motion.div>
-                  ) : (
-                    <motion.div 
-                      key="empty"
-                      initial={{ opacity: 0 }} 
-                      animate={{ opacity: 1 }} 
-                      className="flex flex-col items-center justify-center py-32 text-center space-y-4 glass-panel rounded-[2rem]"
-                    >
-                      <div className="bg-white/5 p-4 rounded-2xl">
-                        <Layers className="w-8 h-8 text-white/20" />
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-white/60 font-medium">No contributions found</p>
-                        <p className="text-white/30 text-sm max-w-xs">We couldn't find any merged pull requests matching this specific filter.</p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+              <div className="min-h-[400px]">
+                {filteredData.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredData.map((repo, index) => (
+                      <RepoCard key={repo.id} repo={repo} index={index} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-32 text-center space-y-4 glass-panel rounded-[2rem]">
+                    <div className="bg-zinc-100 p-4 rounded-2xl">
+                      <Layers className="w-8 h-8 text-zinc-300" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-zinc-600 font-medium">No contributions found</p>
+                      <p className="text-zinc-400 text-sm max-w-xs">We couldn't find any merged pull requests matching this specific filter.</p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
-  );
+      </div>
+    );
 }
 
 function StatCard({ label, value, icon: Icon, color, delay }: { label: string, value: number, icon: any, color: string, delay: number }) {
@@ -295,19 +307,14 @@ function StatCard({ label, value, icon: Icon, color, delay }: { label: string, v
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay, ease: [0.23, 1, 0.32, 1] }}
-      className="glass-panel rounded-[2rem] p-8 flex flex-col justify-between group"
-    >
+    <div className="glass-panel rounded-[2rem] p-8 flex flex-col justify-between group">
       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${colorMap[color]} border transition-transform group-hover:scale-110 duration-500`}>
         <Icon className="w-6 h-6" />
       </div>
       <div className="space-y-1 mt-6">
-        <p className="text-white/40 text-sm font-medium uppercase tracking-wider">{label}</p>
-        <p className="text-4xl font-bold text-white tabular-nums">{value.toLocaleString()}</p>
+        <p className="text-zinc-400 text-sm font-medium uppercase tracking-wider">{label}</p>
+        <p className="text-4xl font-bold text-zinc-900 tabular-nums">{value.toLocaleString()}</p>
       </div>
-    </motion.div>
+    </div>
   );
 }

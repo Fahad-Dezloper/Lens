@@ -142,3 +142,38 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
     return { success: false, error: 'Failed to fetch data from GitHub. The user might have no public contributions or the API is unavailable.' };
   }
 }
+
+export async function searchUsers(query: string): Promise<{ success: boolean; users?: UserProfile[]; error?: string }> {
+  if (!query || query.length < 2) return { success: true, users: [] };
+
+  try {
+    const res = await fetch(
+      `https://api.github.com/search/users?q=${encodeURIComponent(query)}+in:login&per_page=5`,
+      {
+        headers: {
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'Github-Contributions-Viewer'
+        },
+        next: { revalidate: 3600 }
+      }
+    );
+
+    if (!res.ok) {
+      if (res.status === 403 || res.status === 429) {
+        return { success: false, error: 'RATE_LIMIT' };
+      }
+      return { success: false, error: 'Search failed' };
+    }
+
+    const data = await res.json();
+    const users = (data.items || []).map((user: any) => ({
+      login: user.login,
+      avatarUrl: user.avatar_url,
+      htmlUrl: user.html_url
+    }));
+
+    return { success: true, users };
+  } catch (error) {
+    return { success: false, error: 'Failed to search' };
+  }
+}
