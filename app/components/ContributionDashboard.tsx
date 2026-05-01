@@ -100,7 +100,6 @@ export function ContributionDashboard() {
 
   return (
     <div className="w-full max-w-6xl mx-auto space-y-12 px-4 sm:px-6">
-      {/* Platform Header */}
       <div className="flex flex-col items-center justify-center space-y-8 pt-16 lg:pt-32">
         
         <div className="text-center space-y-4">
@@ -119,7 +118,6 @@ export function ContributionDashboard() {
           className="w-full max-w-xl relative group"
           ref={searchRef}
         >
-          {/* <div className="absolute inset-0 bg-indigo-500/5 blur-2xl rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-700" /> */}
           <div className="relative flex items-center bg-white border border-zinc-200 rounded-[2rem] p-1.5 focus-within:border-indigo-500/40 transition-all duration-500 shadow-sm z-50">
             <div className="pl-4 pr-2">
               <Search className="w-5 h-5 text-zinc-400" />
@@ -142,7 +140,6 @@ export function ContributionDashboard() {
             </button>
           </div>
 
-          {/* Suggestions Dropdown */}
           {showSuggestions && suggestions.length > 0 && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-zinc-200 rounded-3xl shadow-xl overflow-hidden z-40">
               <div className="p-2">
@@ -178,10 +175,8 @@ export function ContributionDashboard() {
         </div>
       )}
 
-      {/* User Stats Summary */}
       {data && user && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* User Profile Card */}
             <div className="lg:col-span-4 glass-panel rounded-[2rem] p-8 flex flex-col items-center text-center space-y-6">
               <div className="relative group">
                 <div className="absolute inset-0 bg-indigo-500 rounded-full blur-xl opacity-10 group-hover:opacity-20 transition-opacity" />
@@ -211,7 +206,6 @@ export function ContributionDashboard() {
               </div>
             </div>
 
-            {/* Quick Stats Grid */}
             <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
               <StatCard 
                 label="Merged PRs" 
@@ -236,7 +230,6 @@ export function ContributionDashboard() {
               />
             </div>
 
-            {/* Filters & Content Area */}
             <div className="lg:col-span-12 space-y-8">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8">
                 <div className="flex p-1.5 space-x-1 bg-white/5 rounded-2xl border border-white/5 w-fit">
