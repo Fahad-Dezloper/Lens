@@ -108,7 +108,7 @@ export function ContributionDashboard() {
     <div className="w-full ">
 
       <div className='flex justify-between mb-8 items-center w-full'>
-          <p className="text-zinc-500 text-lg md:text-xl font-light leading-tight">
+          <p className="text-muted-foreground text-lg md:text-xl font-light leading-tight">
             Track people's open source contributions.
           </p>
 
@@ -119,7 +119,7 @@ export function ContributionDashboard() {
         >
           <div className="relative flex items-center bg-card border border-border pr-4 pl-2 rounded-sm focus-within:border-primary/40 transition-all duration-500 shadow-sm z-50">
             <div className="pl-2 pr-4">
-              <Search className="w-5 h-5 text-zinc-400" />
+              <Search className="w-5 h-5 text-muted-foreground" />
             </div>
             <input
               type="text"
@@ -127,7 +127,7 @@ export function ContributionDashboard() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               onFocus={() => username.length >= 2 && setShowSuggestions(true)}
-              className="w-full bg-transparent border-none outline-none text-zinc-900 text-lg py-2 placeholder:text-zinc-300"
+              className="w-full bg-transparent border-none outline-none text-foreground text-lg py-2 placeholder:text-muted-foreground/50"
               spellCheck={false}
             />
             {/* <button
@@ -149,18 +149,18 @@ export function ContributionDashboard() {
                     key={suggestion.login}
                     type="button"
                     onClick={() => handleSubmit(undefined, suggestion.login)}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-zinc-50 rounded-2xl transition-colors group text-left"
+                    className="w-full flex items-center gap-3 p-3 hover:bg-muted/50 rounded-2xl transition-colors group text-left"
                   >
                     <img 
                       src={suggestion.avatarUrl} 
                       alt={suggestion.login} 
-                      className="w-10 h-10 rounded-full border border-zinc-200"
+                      className="w-10 h-10 rounded-full border border-border"
                     />
                     <div className="flex-1">
-                      <p className="text-zinc-900 font-semibold">{suggestion.login}</p>
-                      <p className="text-zinc-400 text-xs">View contributions</p>
+                      <p className="text-foreground font-semibold">{suggestion.login}</p>
+                      <p className="text-muted-foreground text-xs">View contributions</p>
                     </div>
-                    <UserCircle className="w-5 h-5 text-zinc-300 group-hover:text-indigo-500 transition-colors" />
+                    <UserCircle className="w-5 h-5 text-muted-foreground/50 group-hover:text-indigo-500 transition-colors" />
                   </button>
                 ))}
               </div>
@@ -257,18 +257,18 @@ export function ContributionDashboard() {
                 <img 
                   src={user.avatarUrl} 
                   alt={user.login}
-                  className="w-32 h-32 rounded-full border-4 border-white relative z-10 shadow-2xl transition-transform duration-700 "
+                  className="w-32 h-32 rounded-full border-4 border-background relative z-10 shadow-2xl transition-transform duration-700 "
                 />
               </div>
 
               <div className="space-y-3 w-full">
                 <div className="space-y-1">
-                  {user.name && <h1 className="text-3xl font-black text-zinc-900 tracking-tight leading-none">{user.name}</h1>}
-                  <h2 className="text-xl font-medium text-zinc-500">@{user.login}</h2>
+                  {user.name && <h1 className="text-3xl font-black text-foreground tracking-tight leading-none">{user.name}</h1>}
+                  <h2 className="text-xl font-medium text-muted-foreground">@{user.login}</h2>
                 </div>
 
                 {user.bio && (
-                  <p className="text-sm text-zinc-600 leading-relaxed max-w-xs mx-auto italic px-4">
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto italic px-4">
                     "{user.bio}"
                   </p>
                 )}
@@ -278,7 +278,7 @@ export function ContributionDashboard() {
                     href={user.htmlUrl} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="group/link text-zinc-400 hover:text-indigo-600 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-zinc-50 hover:bg-indigo-50 px-3 py-1.5 rounded-full border border-zinc-100 hover:border-indigo-100"
+                    className="group/link text-muted-foreground hover:text-indigo-600 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-muted/30 hover:bg-indigo-500/10 px-3 py-1.5 rounded-full border border-border/50 hover:border-indigo-500/20"
                   >
                     <Code2 className="w-3.5 h-3.5" />
                     GitHub
@@ -290,7 +290,7 @@ export function ContributionDashboard() {
                       href={`https://x.com/${user.twitterUsername}`} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="group/link text-zinc-400 hover:text-sky-500 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-zinc-50 hover:bg-sky-50 px-3 py-1.5 rounded-full border border-zinc-100 hover:border-sky-100"
+                      className="group/link text-muted-foreground hover:text-sky-500 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-muted/30 hover:bg-sky-500/10 px-3 py-1.5 rounded-full border border-border/50 hover:border-sky-500/20"
                     >
                       {/* <Twitter className="w-3.5 h-3.5" /> */}
                       Twitter
@@ -303,7 +303,7 @@ export function ContributionDashboard() {
                       href={user.blog.startsWith('http') ? user.blog : `https://${user.blog}`} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="group/link text-zinc-400 hover:text-emerald-500 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-zinc-50 hover:bg-emerald-50 px-3 py-1.5 rounded-full border border-zinc-100 hover:border-emerald-100"
+                      className="group/link text-muted-foreground hover:text-emerald-500 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-muted/30 hover:bg-emerald-500/10 px-3 py-1.5 rounded-full border border-border/50 hover:border-emerald-500/20"
                     >
                       <LinkIcon className="w-3.5 h-3.5" />
                       Website
@@ -314,7 +314,7 @@ export function ContributionDashboard() {
                   {user.email && (
                     <a 
                       href={`mailto:${user.email}`}
-                      className="group/link text-zinc-400 hover:text-amber-500 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-zinc-50 hover:bg-amber-50 px-3 py-1.5 rounded-full border border-zinc-100 hover:border-amber-100"
+                      className="group/link text-muted-foreground hover:text-amber-500 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-muted/30 hover:bg-amber-500/10 px-3 py-1.5 rounded-full border border-border/50 hover:border-amber-500/20"
                     >
                       <Mail className="w-3.5 h-3.5" />
                       Email
@@ -325,20 +325,20 @@ export function ContributionDashboard() {
               </div>
 
               {/* Profile Metadata */}
-              <div className="grid grid-cols-2 gap-4 w-full pt-4 border-t border-zinc-100/50">
+              <div className="grid grid-cols-2 gap-4 w-full pt-4 border-t border-border/50">
                 {user.location && (
-                  <div className="flex items-center gap-2 text-xs text-zinc-500 justify-center">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground justify-center">
                     <MapPin className="w-3.5 h-3.5 text-indigo-400" />
                     <span className="truncate">{user.location}</span>
                   </div>
                 )}
                 {user.company && (
-                  <div className="flex items-center gap-2 text-xs text-zinc-500 justify-center">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground justify-center">
                     <Building2 className="w-3.5 h-3.5 text-emerald-400" />
                     <span className="truncate">{user.company}</span>
                   </div>
                 )}
-                <div className="flex items-center gap-2 text-xs text-zinc-500 justify-center">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground justify-center">
                   <Users className="w-3.5 h-3.5 text-amber-400" />
                   <span>{user.followers?.toLocaleString()} followers</span>
                 </div>
@@ -346,8 +346,8 @@ export function ContributionDashboard() {
 
               {/* Organizations */}
               {user.organizations && user.organizations.length > 0 && (
-                <div className="w-full space-y-3 pt-4 border-t border-zinc-100/50">
-                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 px-2">
+                <div className="w-full space-y-3 pt-4 border-t border-border/50">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2 px-2">
                     <Building2 className="w-3 h-3" />
                     Organizations
                   </p>
@@ -365,7 +365,7 @@ export function ContributionDashboard() {
                         <img 
                           src={org.avatarUrl} 
                           alt={org.login}
-                          className="w-10 h-10 rounded-lg border border-zinc-100 bg-white relative z-10 transition-transform group-hover/org:scale-110"
+                          className="w-10 h-10 rounded-lg border border-border bg-card relative z-10 transition-transform group-hover/org:scale-110"
                         />
                       </a>
                     ))}
@@ -375,8 +375,8 @@ export function ContributionDashboard() {
 
               {/* GitHub Achievements */}
               {user.achievements && user.achievements.length > 0 && (
-                <div className="w-full space-y-3 pt-4 border-t border-zinc-100/50">
-                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 px-2">
+                <div className="w-full space-y-3 pt-4 border-t border-border/50">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2 px-2">
                     <Award className="w-3 h-3" />
                     Achievements
                   </p>
@@ -428,7 +428,7 @@ export function ContributionDashboard() {
             </div>
 
              <div className='flex flex-col w-full'>
-               <div className="flex p-1.5 space-x-1 bg-white/5 rounded-2xl border border-white/5 w-fit">
+               <div className="flex p-1.5 space-x-1 bg-muted/50 rounded-2xl border border-border/50 w-fit">
                   {tabs.map((tab) => {
                     const Icon = tab.icon;
                     const isActive = filter === tab.id;
@@ -437,17 +437,17 @@ export function ContributionDashboard() {
                         key={tab.id}
                         onClick={() => setFilter(tab.id as FilterType)}
                         className={`relative px-6 py-2.5 text-sm font-semibold rounded-[0.85rem] transition-all outline-none flex items-center gap-3
-                          ${isActive ? 'text-zinc-900' : 'text-zinc-400 hover:text-zinc-600'}`}
+                          ${isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                       >
                         {isActive && (
                           <div
-                            className="absolute inset-0 bg-white border border-zinc-200 rounded-[0.85rem] shadow-sm"
+                            className="absolute inset-0 bg-card border border-border rounded-[0.85rem] shadow-sm"
                           />
                         )}
-                        <Icon className={`w-4 h-4 relative z-10 ${isActive ? 'text-indigo-600' : ''}`} />
+                        <Icon className={`w-4 h-4 relative z-10 ${isActive ? 'text-indigo-500' : ''}`} />
                         <span className="relative z-10">{tab.label}</span>
                         {tab.count !== undefined && (
-                          <span className={`relative z-10 px-1.5 py-0.5 rounded-md text-[10px] ${isActive ? 'bg-indigo-50 text-white' : 'bg-zinc-100 text-zinc-500'}`}>
+                          <span className={`relative z-10 px-1.5 py-0.5 rounded-md text-[10px] ${isActive ? 'bg-indigo-500 text-white' : 'bg-muted text-muted-foreground'}`}>
                             {tab.count}
                           </span>
                         )}
@@ -462,12 +462,12 @@ export function ContributionDashboard() {
                     ))
                 ) : (
                   <div className="flex flex-col items-center justify-center py-32 text-center space-y-4 glass-panel rounded-[2rem]">
-                    <div className="bg-zinc-100 p-4 rounded-2xl">
-                      <Layers className="w-8 h-8 text-zinc-300" />
+                    <div className="bg-muted p-4 rounded-2xl">
+                      <Layers className="w-8 h-8 text-muted-foreground/30" />
                     </div>
                     <div className="space-y-1">
-                      <p className="text-zinc-600 font-medium">No contributions found</p>
-                      <p className="text-zinc-400 text-sm max-w-xs">We couldn't find any merged pull requests matching this specific filter.</p>
+                      <p className="text-foreground font-medium">No contributions found</p>
+                      <p className="text-muted-foreground text-sm max-w-xs">We couldn't find any merged pull requests matching this specific filter.</p>
                     </div>
                   </div>
                 )}
@@ -492,8 +492,8 @@ function StatCard({ label, value, icon: Icon, color, delay }: { label: string, v
         <Icon className="w-6 h-6" />
       </div>
       <div className="space-y-1 mt-6">
-        <p className="text-zinc-400 text-sm font-medium uppercase tracking-wider">{label}</p>
-        <p className="text-4xl font-bold text-zinc-900 tabular-nums">{value.toLocaleString()}</p>
+        <p className="text-muted-foreground text-sm font-medium uppercase tracking-wider">{label}</p>
+        <p className="text-4xl font-bold text-foreground tabular-nums">{value.toLocaleString()}</p>
       </div>
     </div>
   );

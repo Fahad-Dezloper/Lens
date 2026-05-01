@@ -19,11 +19,11 @@ export function RepoCard({ repo, index }: RepoCardProps) {
 
         <div className="space-y-6">
           <div className="flex items-start justify-between">
-            <div className="p-3 bg-zinc-100 rounded-2xl border border-zinc-200 group-hover:border-indigo-500/30 group-hover:bg-indigo-500/5 transition-all duration-500">
+            <div className="p-3 bg-muted rounded-2xl border border-border group-hover:border-indigo-500/30 group-hover:bg-indigo-500/5 transition-all duration-500">
               {repo.isExternal ? (
-                <Globe className="w-6 h-6 text-indigo-600" />
+                <Globe className="w-6 h-6 text-indigo-500" />
               ) : (
-                <User className="w-6 h-6 text-amber-600" />
+                <User className="w-6 h-6 text-amber-500" />
               )}
             </div>
             {repo.isExternal && (
@@ -34,23 +34,23 @@ export function RepoCard({ repo, index }: RepoCardProps) {
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-xl font-bold text-zinc-900 group-hover:text-indigo-600 transition-colors line-clamp-1">
+            <h3 className="text-xl font-bold text-foreground group-hover:text-indigo-500 transition-colors line-clamp-1">
               {repo.repoName}
             </h3>
-            <p className="text-zinc-400 text-sm font-medium">
-              Owned by <span className="text-zinc-600">{repo.owner}</span>
+            <p className="text-muted-foreground text-sm font-medium">
+              Owned by <span className="text-muted-foreground font-semibold">{repo.owner}</span>
             </p>
           </div>
 
           <div className="pt-2">
-            <div className="bg-zinc-50 rounded-2xl p-4 border border-zinc-100 space-y-3">
+            <div className="bg-muted/30 rounded-2xl p-4 border border-border/50 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-zinc-300 uppercase tracking-tighter">Latest Contribution</span>
-                <span className="text-[10px] text-zinc-400">
+                <span className="text-xs font-semibold text-muted-foreground/50 uppercase tracking-tighter">Latest Contribution</span>
+                <span className="text-[10px] text-muted-foreground/70">
                   {new Date(repo.latestPrDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
-              <p className="text-sm text-zinc-600 line-clamp-2 leading-relaxed italic">
+              <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed italic">
                 "{repo.latestPrTitle}"
               </p>
             </div>
@@ -61,17 +61,17 @@ export function RepoCard({ repo, index }: RepoCardProps) {
           <div className="flex items-center gap-2">
             <div className="flex -space-x-1">
               {[...Array(Math.min(repo.prCount, 3))].map((_, i) => (
-                <div key={i} className="w-6 h-6 rounded-full bg-indigo-100 border-2 border-[#FFFDF3] flex items-center justify-center">
-                  <GitPullRequest className="w-3 h-3 text-indigo-600" />
+                <div key={i} className="w-6 h-6 rounded-full bg-indigo-500/10 border-2 border-background flex items-center justify-center">
+                  <GitPullRequest className="w-3 h-3 text-indigo-500" />
                 </div>
               ))}
               {repo.prCount > 3 && (
-                <div className="w-6 h-6 rounded-full bg-zinc-100 border-2 border-[#FFFDF3] flex items-center justify-center text-[10px] font-bold text-zinc-400">
+                <div className="w-6 h-6 rounded-full bg-muted border-2 border-background flex items-center justify-center text-[10px] font-bold text-muted-foreground">
                   +{repo.prCount - 3}
                 </div>
               )}
             </div>
-            <span className="text-sm font-bold text-zinc-900">
+            <span className="text-sm font-bold text-foreground">
               {repo.prCount} {repo.prCount === 1 ? 'PR' : 'PRs'}
             </span>
           </div>
@@ -80,9 +80,9 @@ export function RepoCard({ repo, index }: RepoCardProps) {
             href={repo.repoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2.5 bg-zinc-100 hover:bg-zinc-200 rounded-xl border border-zinc-200 transition-all active:scale-90"
+            className="p-2.5 bg-muted hover:bg-muted/80 rounded-xl border border-border transition-all active:scale-90"
           >
-            <ExternalLink className="w-4 h-4 text-zinc-500" />
+            <ExternalLink className="w-4 h-4 text-muted-foreground" />
           </a>
         </div>
       </div>
