@@ -23,6 +23,9 @@ export type UserProfile = {
   followers?: number;
   following?: number;
   publicRepos?: number;
+  email?: string;
+  twitterUsername?: string;
+  blog?: string;
   createdAt?: string;
   organizations?: {
     login: string;
@@ -41,6 +44,7 @@ export type ActionResponse = {
   user?: UserProfile;
   error?: string;
   totalPrs?: number;
+  externalPrs?: number;
 };
 
 export async function getOpenSourceContributions(username: string): Promise<ActionResponse> {
@@ -101,6 +105,9 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
         followers: userData.followers,
         following: userData.following,
         publicRepos: userData.public_repos,
+        email: userData.email,
+        twitterUsername: userData.twitter_username,
+        blog: userData.blog,
         createdAt: userData.created_at
       };
 
@@ -223,11 +230,25 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
 
     const sortedContributions = Array.from(repoMap.values()).sort((a, b) => b.prCount - a.prCount);
 
+    // Fetch total count for external PRs specifically to show in stats
+    const externalRes = await fetch(
+      `https://api.github.com/search/issues?q=type:pr+author:${encodeURIComponent(cleanUsername)}+is:public+is:merged+-user:${encodeURIComponent(cleanUsername)}&per_page=1`,
+      {
+        headers: {
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'Github-Contributions-Viewer'
+        },
+        next: { revalidate: 3600 }
+      }
+    );
+    const externalTotalCount = externalRes.ok ? (await externalRes.json()).total_count : 0;
+
     return { 
       success: true, 
       data: sortedContributions, 
       user: userProfile,
-      totalPrs: totalCount 
+      totalPrs: totalCount,
+      externalPrs: externalTotalCount
     };
 
   } catch (error: any) {

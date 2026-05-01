@@ -6,7 +6,8 @@ import {
   Search, Loader2, GitPullRequest, AlertCircle, 
   LayoutGrid, Globe, User, ExternalLink, Code2,
   TrendingUp, Layers, Milestone, UserCircle,
-  MapPin, Building2, Users, Award, Calendar, ChevronRight
+  MapPin, Building2, Users, Award, Calendar, ChevronRight,
+  Mail, Link as LinkIcon
 } from 'lucide-react';
 import { RepoCard } from './RepoCard';
 import { motion } from "motion/react"
@@ -21,6 +22,7 @@ export function ContributionDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterType>('all');
   const [totalPrs, setTotalPrs] = useState<number | null>(null);
+  const [externalPrs, setExternalPrs] = useState<number | null>(null);
   const [suggestions, setSuggestions] = useState<UserProfile[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLFormElement>(null);
@@ -62,6 +64,7 @@ export function ContributionDashboard() {
     setUser(null);
     setFilter('all');
     setTotalPrs(null);
+    setExternalPrs(null);
     setSuggestions([]);
     setShowSuggestions(false);
     if (selectedUsername) setUsername(selectedUsername);
@@ -71,6 +74,7 @@ export function ContributionDashboard() {
       setData(result.data);
       setUser(result.user || null);
       setTotalPrs(result.totalPrs || null);
+      setExternalPrs(result.externalPrs || null);
     } else {
       setError(result.error || 'Something went wrong');
     }
@@ -253,7 +257,7 @@ export function ContributionDashboard() {
                 <img 
                   src={user.avatarUrl} 
                   alt={user.login}
-                  className="w-32 h-32 rounded-full border-4 border-white relative z-10 shadow-2xl transition-transform duration-700 group-hover:scale-105"
+                  className="w-32 h-32 rounded-full border-4 border-white relative z-10 shadow-2xl transition-transform duration-700 "
                 />
               </div>
 
@@ -269,17 +273,54 @@ export function ContributionDashboard() {
                   </p>
                 )}
 
-                <div className="flex flex-col items-center gap-2 pt-2">
+                <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
                   <a 
                     href={user.htmlUrl} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="group/link text-zinc-400 hover:text-indigo-600 transition-all flex items-center justify-center gap-1.5 text-sm font-medium bg-zinc-50 hover:bg-indigo-50 px-4 py-2 rounded-full border border-zinc-100 hover:border-indigo-100"
+                    className="group/link text-zinc-400 hover:text-indigo-600 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-zinc-50 hover:bg-indigo-50 px-3 py-1.5 rounded-full border border-zinc-100 hover:border-indigo-100"
                   >
-                    <Code2 className="w-4 h-4" />
-                    github.com/{user.login}
-                    <ExternalLink className="w-3 h-3 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
+                    <Code2 className="w-3.5 h-3.5" />
+                    GitHub
+                    <ExternalLink className="w-2.5 h-2.5 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
                   </a>
+
+                  {user.twitterUsername && (
+                    <a 
+                      href={`https://x.com/${user.twitterUsername}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group/link text-zinc-400 hover:text-sky-500 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-zinc-50 hover:bg-sky-50 px-3 py-1.5 rounded-full border border-zinc-100 hover:border-sky-100"
+                    >
+                      {/* <Twitter className="w-3.5 h-3.5" /> */}
+                      Twitter
+                      <ExternalLink className="w-2.5 h-2.5 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
+                    </a>
+                  )}
+
+                  {user.blog && (
+                    <a 
+                      href={user.blog.startsWith('http') ? user.blog : `https://${user.blog}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group/link text-zinc-400 hover:text-emerald-500 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-zinc-50 hover:bg-emerald-50 px-3 py-1.5 rounded-full border border-zinc-100 hover:border-emerald-100"
+                    >
+                      <LinkIcon className="w-3.5 h-3.5" />
+                      Website
+                      <ExternalLink className="w-2.5 h-2.5 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
+                    </a>
+                  )}
+
+                  {user.email && (
+                    <a 
+                      href={`mailto:${user.email}`}
+                      className="group/link text-zinc-400 hover:text-amber-500 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-zinc-50 hover:bg-amber-50 px-3 py-1.5 rounded-full border border-zinc-100 hover:border-amber-100"
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                      Email
+                      <ExternalLink className="w-2.5 h-2.5 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
+                    </a>
+                  )}
                 </div>
               </div>
 
@@ -301,12 +342,6 @@ export function ContributionDashboard() {
                   <Users className="w-3.5 h-3.5 text-amber-400" />
                   <span>{user.followers?.toLocaleString()} followers</span>
                 </div>
-                {user.createdAt && (
-                  <div className="flex items-center gap-2 text-xs text-zinc-500 justify-center">
-                    <Calendar className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>Joined {new Date(user.createdAt).getFullYear()}</span>
-                  </div>
-                )}
               </div>
 
               {/* Organizations */}
@@ -365,45 +400,12 @@ export function ContributionDashboard() {
                 </div>
               )}
 
-              {/* Achievement Highlights (Derived) */}
-              <div className="w-full space-y-3 pt-4 border-t border-zinc-100/50">
-                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 px-2">
-                  <div className="w-3 h-3 rounded-full border border-zinc-300 flex items-center justify-center">
-                    <div className="w-1 h-1 bg-zinc-400 rounded-full" />
-                  </div>
-                  System Highlights
-                </p>
-                <div className="flex flex-wrap justify-center gap-2">
-                  <span className="px-3 py-1.5 bg-indigo-500/5 border border-indigo-500/10 rounded-full text-[10px] font-bold text-indigo-500 uppercase tracking-tighter flex items-center gap-1.5 shadow-sm">
-                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
-                    OSS Explorer
-                  </span>
-                  {totalPrs && totalPrs > 100 && (
-                    <span className="px-3 py-1.5 bg-emerald-500/5 border border-emerald-500/10 rounded-full text-[10px] font-bold text-emerald-500 uppercase tracking-tighter flex items-center gap-1.5 shadow-sm">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                      Heavy Hitter
-                    </span>
-                  )}
-                  {user.followers && user.followers > 1000 && (
-                    <span className="px-3 py-1.5 bg-amber-500/5 border border-amber-500/10 rounded-full text-[10px] font-bold text-amber-500 uppercase tracking-tighter flex items-center gap-1.5 shadow-sm">
-                      <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                      Influencer
-                    </span>
-                  )}
-                  {user.createdAt && new Date(user.createdAt).getFullYear() <= 2015 && (
-                    <span className="px-3 py-1.5 bg-purple-500/5 border border-purple-500/10 rounded-full text-[10px] font-bold text-purple-500 uppercase tracking-tighter flex items-center gap-1.5 shadow-sm">
-                      <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                      OSS Veteran
-                    </span>
-                  )}
-                </div>
-              </div>
             </div>
 
             <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
               <StatCard 
-                label="Merged PRs" 
-                value={totalPrs || 0} 
+                label="External PRs" 
+                value={externalPrs || 0} 
                 icon={TrendingUp} 
                 color="indigo" 
                 delay={0.2} 
@@ -425,9 +427,8 @@ export function ContributionDashboard() {
             </div>
             </div>
 
-            {/* <div className="space-y-8">
-              <div className="flex flex-col md:items-center justify-between gap-6 border-b border-white/5 pb-8">
-                <div className="flex p-1.5 space-x-1 bg-white/5 rounded-2xl border border-white/5 w-fit">
+             <div className='flex flex-col w-full'>
+               <div className="flex p-1.5 space-x-1 bg-white/5 rounded-2xl border border-white/5 w-fit">
                   {tabs.map((tab) => {
                     const Icon = tab.icon;
                     const isActive = filter === tab.id;
@@ -454,20 +455,11 @@ export function ContributionDashboard() {
                     );
                   })}
                 </div>
-                
-                <div className="text-sm font-medium text-zinc-400">
-                  Showing <span className="text-zinc-900">{filteredData.length}</span> contributions 
-                  in <span className="text-zinc-900">{filter === 'all' ? 'total' : filter}</span> category
-                </div>
-              </div>
-
-              <div className="min-h-[400px]">
-                {filteredData.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {filteredData.map((repo, index) => (
+             <div className='w-full grid grid-cols-2 gap-2 h-fit'>
+                  {filteredData.length > 0 ? (
+                    filteredData.map((repo, index) => (
                       <RepoCard key={repo.id} repo={repo} index={index} />
-                    ))}
-                  </div>
+                    ))
                 ) : (
                   <div className="flex flex-col items-center justify-center py-32 text-center space-y-4 glass-panel rounded-[2rem]">
                     <div className="bg-zinc-100 p-4 rounded-2xl">
@@ -479,21 +471,8 @@ export function ContributionDashboard() {
                     </div>
                   </div>
                 )}
-              </div>
-            </div>
-
-             */}
-
-             <div className='w-full bg-red-400 grid grid-cols-2 gap-2 h-fit'>
-              {/* {[1, 2, 3, 4, 5, 6].map((item, index) => {
-              
-}}) */}
-
-                {[1, 2, 3, 4].map((item, index) => {
-                  return <div key={index} className='w-full bg-blue-500 h-[25vh]'>hi there</div>
-                })}
-              {/* <div className=''></div> */}
              </div>
+          </div>
           </div>
         )}
       </div>
