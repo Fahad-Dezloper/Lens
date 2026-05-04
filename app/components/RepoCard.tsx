@@ -17,7 +17,7 @@ export function RepoCard({ repo, index, username }: RepoCardProps) {
         <div className="flex justify-between items-start">
           <div className="space-y-1">
             <h3 className="text-lg font-black uppercase tracking-tighter line-clamp-1">
-              <span className="opacity-30 mr-2">[{String(index + 1).padStart(2, '0')}]</span>
+              {/* <span className="opacity-30 mr-2">[{String(index + 1).padStart(2, '0')}]</span> */}
               {repo.repoName}
             </h3>
             <div className="flex flex-wrap items-center gap-3">

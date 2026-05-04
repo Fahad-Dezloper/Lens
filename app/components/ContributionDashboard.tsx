@@ -11,20 +11,31 @@ import {
 } from 'lucide-react';
 import { RepoCard } from './RepoCard';
 
+import { useSearchParams, useRouter } from 'next/navigation';
+import { ActionResponse } from '../actions';
+
 type FilterType = 'all' | 'external' | 'owned';
 
-export function ContributionDashboard() {
-  const [username, setUsername] = useState('');
+export function ContributionDashboard({ initialUsername, initialData }: { initialUsername?: string, initialData?: ActionResponse }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [username, setUsername] = useState(initialUsername || '');
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<RepoContribution[] | null>(null);
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<RepoContribution[] | null>(initialData?.data || null);
+  const [user, setUser] = useState<UserProfile | null>(initialData?.user || null);
+  const [error, setError] = useState<string | null>(initialData?.error || null);
   const [filter, setFilter] = useState<FilterType>('external');
-  const [totalPrs, setTotalPrs] = useState<number | null>(null);
-  const [externalPrs, setExternalPrs] = useState<number | null>(null);
+  const [totalPrs, setTotalPrs] = useState<number | null>(initialData?.totalPrs || null);
+  const [externalPrs, setExternalPrs] = useState<number | null>(initialData?.externalPrs || null);
   const [suggestions, setSuggestions] = useState<UserProfile[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (initialUsername && !initialData) {
+      handleSubmit(undefined, initialUsername);
+    }
+  }, [initialUsername, initialData]);
 
   useEffect(() => {
     const timer = setTimeout(async () => {
@@ -57,6 +68,11 @@ export function ContributionDashboard() {
     if (e) e.preventDefault();
     const finalUsername = selectedUsername || username;
     if (!finalUsername.trim()) return;
+
+    // Update URL
+    const params = new URLSearchParams(searchParams);
+    params.set('q', finalUsername.trim());
+    router.push(`?${params.toString()}`, { scroll: false });
     
     setLoading(true);
     setError(null);

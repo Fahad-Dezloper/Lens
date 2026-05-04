@@ -50,6 +50,19 @@ export type ActionResponse = {
   externalPrs?: number;
 };
 
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+
+async function ghFetch(url: string, options: RequestInit = {}) {
+  const headers = {
+    'Accept': 'application/vnd.github.v3+json',
+    'User-Agent': 'Github-Contributions-Viewer',
+    ...(GITHUB_TOKEN && { 'Authorization': `Bearer ${GITHUB_TOKEN}` }),
+    ...(options.headers || {})
+  };
+
+  return fetch(url, { ...options, headers });
+}
+
 export async function getOpenSourceContributions(username: string): Promise<ActionResponse> {
   if (!username) {
     return { success: false, error: 'Username is required' };
@@ -59,15 +72,9 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
 
   try {
     const fetchPage = async (page: number) => {
-      const res = await fetch(
+      const res = await ghFetch(
         `https://api.github.com/search/issues?q=type:pr+author:${encodeURIComponent(cleanUsername)}+is:public&per_page=100&page=${page}`,
-        {
-          headers: {
-            'Accept': 'application/vnd.github.v3+json',
-            'User-Agent': 'Github-Contributions-Viewer'
-          },
-          next: { revalidate: 3600 }
-        }
+        { next: { revalidate: 3600 } }
       );
 
       if (!res.ok) {
@@ -86,11 +93,7 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
     const totalCount = firstPageData.total_count || 0;
 
     // Fetch full user profile
-    const userRes = await fetch(`https://api.github.com/users/${encodeURIComponent(cleanUsername)}`, {
-      headers: {
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'Github-Contributions-Viewer'
-      },
+    const userRes = await ghFetch(`https://api.github.com/users/${encodeURIComponent(cleanUsername)}`, {
       next: { revalidate: 3600 }
     });
 
@@ -115,11 +118,7 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
       };
 
       // Fetch organizations
-      const orgsRes = await fetch(`https://api.github.com/users/${encodeURIComponent(cleanUsername)}/orgs`, {
-        headers: {
-          'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'Github-Contributions-Viewer'
-        },
+      const orgsRes = await ghFetch(`https://api.github.com/users/${encodeURIComponent(cleanUsername)}/orgs`, {
         next: { revalidate: 3600 }
       });
       if (orgsRes.ok) {
@@ -178,8 +177,8 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
       };
     }
 
-    // Scale optimization: Fetch up to 5 pages (500 PRs) to balance depth vs speed/limits
-    const MAX_PAGES = 5;
+    // Scale optimization: Fetch up to 10 pages (1000 PRs) given the higher token limits
+    const MAX_PAGES = 10;
     const totalPages = Math.min(Math.ceil(totalCount / 100), MAX_PAGES);
 
     if (totalPages > 1) {
@@ -237,18 +236,14 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
 
     // Fetch repository details (stars/description) in batches to avoid rate limits
     const uniqueRepoIds = Array.from(repoMap.keys());
-    const BATCH_SIZE = 20; // Search API allows multiple repo filters
+    const BATCH_SIZE = 30; // Search API allows multiple repo filters
     
     for (let i = 0; i < uniqueRepoIds.length; i += BATCH_SIZE) {
       const batch = uniqueRepoIds.slice(i, i + BATCH_SIZE);
       const query = batch.map(id => `repo:${id}`).join('+');
       
       try {
-        const repoRes = await fetch(`https://api.github.com/search/repositories?q=${query}`, {
-          headers: {
-            'Accept': 'application/vnd.github.v3+json',
-            'User-Agent': 'Github-Contributions-Viewer'
-          },
+        const repoRes = await ghFetch(`https://api.github.com/search/repositories?q=${query}`, {
           next: { revalidate: 86400 } // Cache repo data longer
         });
 
@@ -275,15 +270,9 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
     });
 
     // Fetch total count for external PRs specifically to show in stats
-    const externalRes = await fetch(
-      `https://api.github.com/search/issues?q=type:pr+author:${encodeURIComponent(cleanUsername)}+is:public+is:merged+-user:${encodeURIComponent(cleanUsername)}&per_page=1`,
-      {
-        headers: {
-          'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'Github-Contributions-Viewer'
-        },
-        next: { revalidate: 3600 }
-      }
+    const externalRes = await ghFetch(
+      `https://api.github.com/search/issues?q=type:pr+author:${encodeURIComponent(cleanUsername)}+is:public+-user:${encodeURIComponent(cleanUsername)}&per_page=1`,
+      { next: { revalidate: 3600 } }
     );
     const externalTotalCount = externalRes.ok ? (await externalRes.json()).total_count : 0;
 
@@ -308,15 +297,9 @@ export async function searchUsers(query: string): Promise<{ success: boolean; us
   if (!query || query.length < 2) return { success: true, users: [] };
 
   try {
-    const res = await fetch(
+    const res = await ghFetch(
       `https://api.github.com/search/users?q=${encodeURIComponent(query)}+in:login&per_page=5`,
-      {
-        headers: {
-          'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'Github-Contributions-Viewer'
-        },
-        next: { revalidate: 3600 }
-      }
+      { next: { revalidate: 3600 } }
     );
 
     if (!res.ok) {
@@ -336,5 +319,25 @@ export async function searchUsers(query: string): Promise<{ success: boolean; us
     return { success: true, users };
   } catch (error) {
     return { success: false, error: 'Failed to search' };
+  }
+}
+
+export async function getUserProfile(username: string): Promise<UserProfile | null> {
+  const cleanUsername = username.trim().toLowerCase();
+  try {
+    const res = await ghFetch(`https://api.github.com/users/${encodeURIComponent(cleanUsername)}`, {
+      next: { revalidate: 3600 }
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return {
+      login: data.login,
+      avatarUrl: data.avatar_url,
+      htmlUrl: data.html_url,
+      name: data.name,
+      bio: data.bio
+    };
+  } catch (e) {
+    return null;
   }
 }
