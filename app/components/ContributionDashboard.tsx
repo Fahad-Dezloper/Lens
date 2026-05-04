@@ -10,7 +10,6 @@ import {
   Mail, Link as LinkIcon
 } from 'lucide-react';
 import { RepoCard } from './RepoCard';
-import { motion } from "motion/react"
 
 type FilterType = 'all' | 'external' | 'owned';
 
@@ -20,7 +19,7 @@ export function ContributionDashboard() {
   const [data, setData] = useState<RepoContribution[] | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<FilterType>('all');
+  const [filter, setFilter] = useState<FilterType>('external');
   const [totalPrs, setTotalPrs] = useState<number | null>(null);
   const [externalPrs, setExternalPrs] = useState<number | null>(null);
   const [suggestions, setSuggestions] = useState<UserProfile[]>([]);
@@ -43,6 +42,7 @@ export function ContributionDashboard() {
 
     return () => clearTimeout(timer);
   }, [username, loading]);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -62,7 +62,7 @@ export function ContributionDashboard() {
     setError(null);
     setData(null);
     setUser(null);
-    setFilter('all');
+    setFilter('external');
     setTotalPrs(null);
     setExternalPrs(null);
     setSuggestions([]);
@@ -99,177 +99,95 @@ export function ContributionDashboard() {
   }, [data]);
 
   const tabs = [
-    { id: 'all', label: 'Overview', icon: LayoutGrid, count: data?.length },
     { id: 'external', label: 'Contributions', icon: Globe, count: stats?.externalRepos },
     { id: 'owned', label: 'My Projects', icon: User, count: stats?.ownedRepos },
   ];
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
+      <div className='flex flex-col md:flex-row justify-between mb-12 items-start md:items-center w-full gap-4'>
+        <p className="text-foreground text-sm font-black uppercase tracking-widest border-l-4 border-foreground pl-4">
+          CONTRIBUTION TRACKER // OPEN SOURCE UTILITY
+        </p>
 
-      <div className='flex justify-between mb-8 items-center w-full'>
-          <p className="text-muted-foreground text-lg md:text-xl font-light leading-tight">
-            Track people's open source contributions.
-          </p>
-
- <form 
+        <form 
           onSubmit={(e) => handleSubmit(e)}
           className="w-full max-w-md relative group"
           ref={searchRef}
         >
-          <div className="relative flex items-center bg-card border border-border pr-4 pl-2 rounded-sm focus-within:border-primary/40 transition-all duration-500 shadow-sm z-50">
+          <div className="relative flex items-center bg-background border-2 border-foreground pr-4 pl-2 transition-colors">
             <div className="pl-2 pr-4">
-              <Search className="w-5 h-5 text-muted-foreground" />
+              <Search className="w-5 h-5 text-foreground" />
             </div>
             <input
               type="text"
-              placeholder="Enter GitHub username..."
+              placeholder="ENTER GITHUB USERNAME..."
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               onFocus={() => username.length >= 2 && setShowSuggestions(true)}
-              className="w-full bg-transparent border-none outline-none text-foreground text-lg py-2 placeholder:text-muted-foreground/50"
+              className="w-full bg-transparent border-none outline-none text-foreground text-sm py-3 placeholder:text-foreground/30 font-black uppercase tracking-tighter"
               spellCheck={false}
             />
-            {/* <button
-              type="submit"
-              disabled={loading || !username.trim()}
-              className="bg-primary hover:bg-primary/90 whitespace-nowrap text-primary-foreground px-4 py-2 rounded-sm font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center shadow-lg shadow-primary/20"
-            >
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Fetch'}
-            </button> */}
-
-            <kbd className="bg-muted pointer-events-none hidden h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none sm:flex"><span className="text-xs">⌘</span>F</kbd>
+            <kbd className="bg-foreground text-background pointer-events-none hidden h-5 items-center gap-1 border border-foreground px-1.5 font-mono text-[10px] font-medium opacity-100 select-none sm:flex">
+              <span className="text-xs">⌘</span>F
+            </kbd>
           </div>
 
           {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-3xl shadow-xl overflow-hidden z-40">
-              <div className="p-2">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-background border-2 border-foreground shadow-none z-40">
+              <div className="p-1">
                 {suggestions.map((suggestion) => (
                   <button
                     key={suggestion.login}
                     type="button"
                     onClick={() => handleSubmit(undefined, suggestion.login)}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-muted/50 rounded-2xl transition-colors group text-left"
+                    className="w-full flex items-center gap-3 p-3 hover:bg-foreground hover:text-background transition-colors group text-left border border-transparent hover:border-foreground"
                   >
                     <img 
                       src={suggestion.avatarUrl} 
                       alt={suggestion.login} 
-                      className="w-10 h-10 rounded-full border border-border"
+                      className="w-10 h-10 border border-foreground grayscale"
                     />
                     <div className="flex-1">
-                      <p className="text-foreground font-semibold">{suggestion.login}</p>
-                      <p className="text-muted-foreground text-xs">View contributions</p>
+                      <p className="text-[10px] font-black uppercase tracking-tighter">{suggestion.login}</p>
+                      <p className="text-[8px] font-bold opacity-50 uppercase">VIEW CONTRIBUTIONS</p>
                     </div>
-                    <UserCircle className="w-5 h-5 text-muted-foreground/50 group-hover:text-indigo-500 transition-colors" />
                   </button>
                 ))}
               </div>
             </div>
           )}
         </form>
-
       </div>
 
-      {/* <motion.div className="flex flex-col items-center space-y-8 mb-12 pt-16 lg:pt-14">
-        
-        <div className="text-center space-y-4">
-          <h1 
-            className="font-pixel text-5xl md:text-7xl  font-bold tracking-tighter dark:text-[#FDFBF2]"
-          >
-           Open Source Contributions
-          </h1>
-          <p className="text-zinc-500 text-lg md:text-xl max-w-2xl mx-auto font-light leading-tight">
-            Track people's open source contributions.
-          </p>
-        </div>
-
-        <form 
-          onSubmit={(e) => handleSubmit(e)}
-          className="w-full max-w-lg relative group"
-          ref={searchRef}
-        >
-          <div className="relative flex items-center bg-card border border-border rounded-sm p-1 focus-within:border-primary/40 transition-all duration-500 shadow-sm z-50">
-            <div className="pl-2 pr-4">
-              <Search className="w-5 h-5 text-zinc-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Enter GitHub username..."
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              onFocus={() => username.length >= 2 && setShowSuggestions(true)}
-              className="w-full bg-transparent border-none outline-none text-zinc-900 text-lg py-3 placeholder:text-zinc-300"
-              spellCheck={false}
-            />
-            <button
-              type="submit"
-              disabled={loading || !username.trim()}
-              className="bg-primary hover:bg-primary/90 whitespace-nowrap text-primary-foreground px-4 py-2 rounded-sm font-semibold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center shadow-lg shadow-primary/20"
-            >
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Fetch'}
-            </button>
-          </div>
-
-          {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-3xl shadow-xl overflow-hidden z-40">
-              <div className="p-2">
-                {suggestions.map((suggestion) => (
-                  <button
-                    key={suggestion.login}
-                    type="button"
-                    onClick={() => handleSubmit(undefined, suggestion.login)}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-zinc-50 rounded-2xl transition-colors group text-left"
-                  >
-                    <img 
-                      src={suggestion.avatarUrl} 
-                      alt={suggestion.login} 
-                      className="w-10 h-10 rounded-full border border-zinc-200"
-                    />
-                    <div className="flex-1">
-                      <p className="text-zinc-900 font-semibold">{suggestion.login}</p>
-                      <p className="text-zinc-400 text-xs">View contributions</p>
-                    </div>
-                    <UserCircle className="w-5 h-5 text-zinc-300 group-hover:text-indigo-500 transition-colors" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </form>
-      </motion.div> */}
-
       {error && (
-        <div className="flex items-center gap-3 text-red-400 bg-red-400/5 px-6 py-4 rounded-2xl border border-red-400/10 max-w-lg mx-auto">
+        <div className="flex items-center gap-3 text-foreground bg-background px-6 py-4 border-2 border-foreground max-w-lg mx-auto mb-8">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <p className="text-sm font-medium">{error}</p>
         </div>
       )}
 
       {data && user && (
-        <div className="flex gap-6">
-          <div className='flex flex-col gap-6 w-[35vw]'>
-            <div className="lg:col-span-4 glass-panel rounded-[2.5rem] p-8 flex flex-col items-center text-center space-y-6 relative overflow-hidden group">
-              {/* Background gradient effect */}
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500" />
-              
-              <div className="relative group">
-                <div className="absolute inset-0 bg-indigo-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-700" />
+        <div className="flex flex-col  md:flex-row gap-6">
+          <div className='flex flex-col gap-6 w-full md:w-[350px] shrink-0'>
+            <div className="border-2 border-foreground p-8 flex flex-col items-center text-center space-y-6 bg-background relative">
+              <div className="relative">
                 <img 
                   src={user.avatarUrl} 
                   alt={user.login}
-                  className="w-32 h-32 rounded-full border-4 border-background relative z-10 shadow-2xl transition-transform duration-700 "
+                  className="w-32 h-32 border-2 border-foreground grayscale"
                 />
               </div>
 
               <div className="space-y-3 w-full">
                 <div className="space-y-1">
-                  {user.name && <h1 className="text-3xl font-black text-foreground tracking-tight leading-none">{user.name}</h1>}
-                  <h2 className="text-xl font-medium text-muted-foreground">@{user.login}</h2>
+                  {user.name && <h1 className="text-2xl font-bold text-foreground uppercase tracking-tighter leading-none">{user.name}</h1>}
+                  <h2 className="text-lg font-medium text-muted-foreground">@{user.login}</h2>
                 </div>
 
                 {user.bio && (
-                  <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto italic px-4">
-                    "{user.bio}"
+                  <p className="text-xs text-muted-foreground leading-relaxed max-w-xs mx-auto px-4 border-t border-b border-foreground/10 py-2">
+                    {user.bio}
                   </p>
                 )}
 
@@ -278,11 +196,10 @@ export function ContributionDashboard() {
                     href={user.htmlUrl} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="group/link text-muted-foreground hover:text-indigo-600 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-muted/30 hover:bg-indigo-500/10 px-3 py-1.5 rounded-full border border-border/50 hover:border-indigo-500/20"
+                    className="text-foreground hover:bg-foreground hover:text-background transition-colors flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase border border-foreground px-3 py-1.5"
                   >
-                    <Code2 className="w-3.5 h-3.5" />
+                    <Code2 className="w-3 h-3" />
                     GitHub
-                    <ExternalLink className="w-2.5 h-2.5 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
                   </a>
 
                   {user.twitterUsername && (
@@ -290,11 +207,9 @@ export function ContributionDashboard() {
                       href={`https://x.com/${user.twitterUsername}`} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="group/link text-muted-foreground hover:text-sky-500 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-muted/30 hover:bg-sky-500/10 px-3 py-1.5 rounded-full border border-border/50 hover:border-sky-500/20"
+                      className="text-foreground hover:bg-foreground hover:text-background transition-colors flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase border border-foreground px-3 py-1.5"
                     >
-                      {/* <Twitter className="w-3.5 h-3.5" /> */}
                       Twitter
-                      <ExternalLink className="w-2.5 h-2.5 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
                     </a>
                   )}
 
@@ -303,69 +218,61 @@ export function ContributionDashboard() {
                       href={user.blog.startsWith('http') ? user.blog : `https://${user.blog}`} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="group/link text-muted-foreground hover:text-emerald-500 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-muted/30 hover:bg-emerald-500/10 px-3 py-1.5 rounded-full border border-border/50 hover:border-emerald-500/20"
+                      className="text-foreground hover:bg-foreground hover:text-background transition-colors flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase border border-foreground px-3 py-1.5"
                     >
-                      <LinkIcon className="w-3.5 h-3.5" />
                       Website
-                      <ExternalLink className="w-2.5 h-2.5 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
                     </a>
                   )}
 
                   {user.email && (
                     <a 
                       href={`mailto:${user.email}`}
-                      className="group/link text-muted-foreground hover:text-amber-500 transition-all flex items-center justify-center gap-1.5 text-xs font-medium bg-muted/30 hover:bg-amber-500/10 px-3 py-1.5 rounded-full border border-border/50 hover:border-amber-500/20"
+                      className="text-foreground hover:bg-foreground hover:text-background transition-colors flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase border border-foreground px-3 py-1.5"
                     >
-                      <Mail className="w-3.5 h-3.5" />
                       Email
-                      <ExternalLink className="w-2.5 h-2.5 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
                     </a>
                   )}
                 </div>
               </div>
 
-              {/* Profile Metadata */}
-              <div className="grid grid-cols-2 gap-4 w-full pt-4 border-t border-border/50">
+              <div className="grid grid-cols-1 gap-2 w-full pt-4 border-t border-foreground">
                 {user.location && (
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground justify-center">
-                    <MapPin className="w-3.5 h-3.5 text-indigo-400" />
+                  <div className="flex items-center gap-2 text-[10px] text-foreground font-bold uppercase">
+                    <MapPin className="w-3 h-3" />
                     <span className="truncate">{user.location}</span>
                   </div>
                 )}
                 {user.company && (
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground justify-center">
-                    <Building2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <div className="flex items-center gap-2 text-[10px] text-foreground font-bold uppercase">
+                    <Building2 className="w-3 h-3" />
                     <span className="truncate">{user.company}</span>
                   </div>
                 )}
-                <div className="flex items-center gap-2 text-xs text-muted-foreground justify-center">
-                  <Users className="w-3.5 h-3.5 text-amber-400" />
+                <div className="flex items-center gap-2 text-[10px] text-foreground font-bold uppercase">
+                  <Users className="w-3 h-3" />
                   <span>{user.followers?.toLocaleString()} followers</span>
                 </div>
               </div>
 
-              {/* Organizations */}
               {user.organizations && user.organizations.length > 0 && (
-                <div className="w-full space-y-3 pt-4 border-t border-border/50">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2 px-2">
-                    <Building2 className="w-3 h-3" />
+                <div className="w-full space-y-3 pt-4 border-t border-foreground">
+                  <p className="text-[10px] font-black text-foreground uppercase tracking-widest flex items-center gap-2">
                     Organizations
                   </p>
-                  <div className="flex flex-wrap justify-center gap-3 px-2">
+                  <div className="flex flex-wrap gap-2">
                     {user.organizations.map((org) => (
                       <a 
                         key={org.login}
                         href={`https://github.com/${org.login}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group/org relative"
+                        className="grayscale hover:grayscale-0 transition-all"
                         title={org.login}
                       >
-                        <div className="absolute -inset-1 bg-indigo-500/20 rounded-lg blur opacity-0 group-hover/org:opacity-100 transition-opacity" />
                         <img 
                           src={org.avatarUrl} 
                           alt={org.login}
-                          className="w-10 h-10 rounded-lg border border-border bg-card relative z-10 transition-transform group-hover/org:scale-110"
+                          className="w-8 h-8 border border-foreground"
                         />
                       </a>
                     ))}
@@ -373,24 +280,21 @@ export function ContributionDashboard() {
                 </div>
               )}
 
-              {/* GitHub Achievements */}
               {user.achievements && user.achievements.length > 0 && (
-                <div className="w-full space-y-3 pt-4 border-t border-border/50">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2 px-2">
-                    <Award className="w-3 h-3" />
+                <div className="w-full space-y-3 pt-4 border-t border-foreground">
+                  <p className="text-[10px] font-black text-foreground uppercase tracking-widest flex items-center gap-2">
                     Achievements
                   </p>
-                  <div className="flex flex-wrap justify-center gap-4 px-2">
+                  <div className="flex flex-wrap gap-3">
                     {user.achievements.map((achievement) => (
-                      <div key={achievement.name} className="relative group/achievement" title={achievement.name}>
-                        <div className="absolute inset-0 bg-indigo-500/10 rounded-full blur-md opacity-0 group-hover/achievement:opacity-100 transition-opacity" />
+                      <div key={achievement.name} className="relative grayscale hover:grayscale-0 transition-all" title={achievement.name}>
                         <img 
                           src={achievement.iconUrl} 
                           alt={achievement.name}
-                          className="w-14 h-14 relative z-10 transition-transform duration-500 group-hover/achievement:scale-115 group-hover/achievement:-rotate-6"
+                          className="w-10 h-10"
                         />
                         {achievement.count && achievement.count > 1 && (
-                          <span className="absolute -bottom-1 -right-1 bg-zinc-900 text-white text-[10px] font-black px-2 py-0.5 rounded-full border-2 border-white shadow-lg z-20">
+                          <span className="absolute -bottom-1 -right-1 bg-foreground text-background text-[8px] font-black px-1 border border-background">
                             x{achievement.count}
                           </span>
                         )}
@@ -399,102 +303,81 @@ export function ContributionDashboard() {
                   </div>
                 </div>
               )}
-
             </div>
 
-            <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="flex flex-col gap-4">
               <StatCard 
                 label="External PRs" 
                 value={externalPrs || 0} 
                 icon={TrendingUp} 
-                color="indigo" 
-                delay={0.2} 
               />
               <StatCard 
                 label="External Projects" 
                 value={stats?.externalRepos || 0} 
                 icon={Globe} 
-                color="emerald" 
-                delay={0.3} 
               />
               <StatCard 
                 label="Owned Repos" 
                 value={stats?.ownedRepos || 0} 
                 icon={Milestone} 
-                color="amber" 
-                delay={0.4} 
               />
             </div>
+          </div>
+
+          <div className='flex flex-col w-full gap-6'>
+            <div className="flex border-2 border-foreground w-fit bg-background p-1">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = filter === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setFilter(tab.id as FilterType)}
+                    className={`px-4 py-2 text-[10px] font-black uppercase transition-colors flex items-center gap-2
+                      ${isActive ? 'bg-foreground text-background' : 'text-foreground hover:bg-foreground/10'}`}
+                  >
+                    <Icon className="w-3 h-3" />
+                    <span>{tab.label}</span>
+                    {tab.count !== undefined && (
+                      <span className={`px-1 border ${isActive ? 'border-background bg-background text-foreground' : 'border-foreground bg-foreground text-background'}`}>
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
-             <div className='flex flex-col w-full'>
-               <div className="flex p-1.5 space-x-1 bg-muted/50 rounded-2xl border border-border/50 w-fit">
-                  {tabs.map((tab) => {
-                    const Icon = tab.icon;
-                    const isActive = filter === tab.id;
-                    return (
-                      <button
-                        key={tab.id}
-                        onClick={() => setFilter(tab.id as FilterType)}
-                        className={`relative px-6 py-2.5 text-sm font-semibold rounded-[0.85rem] transition-all outline-none flex items-center gap-3
-                          ${isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                      >
-                        {isActive && (
-                          <div
-                            className="absolute inset-0 bg-card border border-border rounded-[0.85rem] shadow-sm"
-                          />
-                        )}
-                        <Icon className={`w-4 h-4 relative z-10 ${isActive ? 'text-indigo-500' : ''}`} />
-                        <span className="relative z-10">{tab.label}</span>
-                        {tab.count !== undefined && (
-                          <span className={`relative z-10 px-1.5 py-0.5 rounded-md text-[10px] ${isActive ? 'bg-indigo-500 text-white' : 'bg-muted text-muted-foreground'}`}>
-                            {tab.count}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-             <div className='w-full grid grid-cols-2 gap-2 h-fit'>
-                  {filteredData.length > 0 ? (
-                    filteredData.map((repo, index) => (
-                      <RepoCard key={repo.id} repo={repo} index={index} />
-                    ))
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-32 text-center space-y-4 glass-panel rounded-[2rem]">
-                    <div className="bg-muted p-4 rounded-2xl">
-                      <Layers className="w-8 h-8 text-muted-foreground/30" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-foreground font-medium">No contributions found</p>
-                      <p className="text-muted-foreground text-sm max-w-xs">We couldn't find any merged pull requests matching this specific filter.</p>
-                    </div>
+            <div className='w-full grid grid-cols-1 xl:grid-cols-2 gap-4'>
+              {filteredData.length > 0 ? (
+                filteredData.map((repo, index) => (
+                  <RepoCard key={repo.id} repo={repo} index={index} username={user.login} />
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-center py-24 text-center space-y-4 border-2 border-foreground bg-background">
+                  <Layers className="w-12 h-12 text-foreground/20" />
+                  <div className="space-y-1">
+                    <p className="text-foreground font-black uppercase text-sm">No contributions found</p>
+                    <p className="text-muted-foreground text-[10px] max-w-xs uppercase">Filter returned 0 results</p>
                   </div>
-                )}
-             </div>
+                </div>
+              )}
+            </div>
           </div>
-          </div>
-        )}
-      </div>
-    );
+        </div>
+      )}
+    </div>
+  );
 }
 
-function StatCard({ label, value, icon: Icon, color, delay }: { label: string, value: number, icon: any, color: string, delay: number }) {
-  const colorMap: Record<string, string> = {
-    indigo: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
-    emerald: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-    amber: 'text-amber-400 bg-amber-500/10 border-amber-500/20'
-  };
-
+function StatCard({ label, value, icon: Icon }: { label: string, value: number, icon: any }) {
   return (
-    <div className="glass-panel rounded-[2rem] p-8 flex flex-col justify-between group">
-      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${colorMap[color]} border transition-transform group-hover:scale-110 duration-500`}>
-        <Icon className="w-6 h-6" />
+    <div className="border-2 border-foreground p-6 flex flex-col justify-between bg-background group hover:bg-foreground hover:text-background transition-colors">
+      <div className="flex items-center justify-between">
+        <p className="text-[10px] font-black uppercase tracking-widest">{label}</p>
+        <Icon className="w-4 h-4" />
       </div>
-      <div className="space-y-1 mt-6">
-        <p className="text-muted-foreground text-sm font-medium uppercase tracking-wider">{label}</p>
-        <p className="text-4xl font-bold text-foreground tabular-nums">{value.toLocaleString()}</p>
-      </div>
+      <p className="text-3xl font-black tabular-nums mt-4">{value.toLocaleString()}</p>
     </div>
   );
 }

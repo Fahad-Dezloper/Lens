@@ -2,8 +2,8 @@ import { ContributionDashboard } from './components/ContributionDashboard';
 
 export default function Home() {
   return (
-    <main className="h-full py-2 md:px-12 selection:bg-indigo-500/30">
+    <div className="py-8 md:px-12 selection:bg-foreground selection:text-background">
       <ContributionDashboard />
-    </main>
+    </div>
   );
 }

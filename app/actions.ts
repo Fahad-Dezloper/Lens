@@ -10,6 +10,9 @@ export type RepoContribution = {
   latestPrTitle: string;
   latestPrUrl: string;
   latestPrDate: string;
+  stars: number;
+  hasOpenPrs: boolean;
+  description?: string;
 };
 
 export type UserProfile = {
@@ -57,7 +60,7 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
   try {
     const fetchPage = async (page: number) => {
       const res = await fetch(
-        `https://api.github.com/search/issues?q=type:pr+author:${encodeURIComponent(cleanUsername)}+is:public+is:merged&per_page=100&page=${page}`,
+        `https://api.github.com/search/issues?q=type:pr+author:${encodeURIComponent(cleanUsername)}+is:public&per_page=100&page=${page}`,
         {
           headers: {
             'Accept': 'application/vnd.github.v3+json',
@@ -204,10 +207,12 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
       const owner = id.split('/')[0];
       const isExternal = owner.toLowerCase() !== cleanUsername;
       const repoUrl = `https://github.com/${id}`;
+      const isOpen = item.state === 'open';
       
       if (repoMap.has(id)) {
         const existing = repoMap.get(id)!;
         existing.prCount += 1;
+        if (isOpen) existing.hasOpenPrs = true;
         if (new Date(item.created_at) > new Date(existing.latestPrDate)) {
           existing.latestPrTitle = item.title;
           existing.latestPrUrl = item.html_url;
@@ -221,14 +226,53 @@ export async function getOpenSourceContributions(username: string): Promise<Acti
           owner,
           isExternal,
           prCount: 1,
+          hasOpenPrs: isOpen,
           latestPrTitle: item.title,
           latestPrUrl: item.html_url,
           latestPrDate: item.created_at,
+          stars: 0,
         });
       }
     }
 
-    const sortedContributions = Array.from(repoMap.values()).sort((a, b) => b.prCount - a.prCount);
+    // Fetch repository details (stars/description) in batches to avoid rate limits
+    const uniqueRepoIds = Array.from(repoMap.keys());
+    const BATCH_SIZE = 20; // Search API allows multiple repo filters
+    
+    for (let i = 0; i < uniqueRepoIds.length; i += BATCH_SIZE) {
+      const batch = uniqueRepoIds.slice(i, i + BATCH_SIZE);
+      const query = batch.map(id => `repo:${id}`).join('+');
+      
+      try {
+        const repoRes = await fetch(`https://api.github.com/search/repositories?q=${query}`, {
+          headers: {
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'Github-Contributions-Viewer'
+          },
+          next: { revalidate: 86400 } // Cache repo data longer
+        });
+
+        if (repoRes.ok) {
+          const repoData = await repoRes.json();
+          (repoData.items || []).forEach((repoItem: any) => {
+            const contribution = repoMap.get(repoItem.full_name);
+            if (contribution) {
+              contribution.stars = repoItem.stargazers_count;
+              contribution.description = repoItem.description;
+            }
+          });
+        }
+      } catch (e) {
+        console.error('Failed to fetch repo batch:', e);
+      }
+    }
+
+    const sortedContributions = Array.from(repoMap.values()).sort((a, b) => {
+      // Primary: Stars (Reputation)
+      if (b.stars !== a.stars) return b.stars - a.stars;
+      // Secondary: PR Count
+      return b.prCount - a.prCount;
+    });
 
     // Fetch total count for external PRs specifically to show in stats
     const externalRes = await fetch(

@@ -6,85 +6,84 @@ import { GitPullRequest, ExternalLink, Globe, User } from 'lucide-react';
 interface RepoCardProps {
   repo: RepoContribution;
   index: number;
+  username: string;
 }
 
-export function RepoCard({ repo, index }: RepoCardProps) {
+export function RepoCard({ repo, index, username }: RepoCardProps) {
   return (
-    <div className="group relative">
-      <div className="absolute inset-0 bg-indigo-500/5 blur-2xl rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
-      <div className="relative glass-panel rounded-[2rem] p-7 h-full flex flex-col justify-between overflow-hidden">
-        {/* Background Accent */}
-        <div className="absolute -top-12 -right-12 w-24 h-24 bg-indigo-500/5 blur-3xl rounded-full group-hover:bg-indigo-500/10 transition-colors" />
+    <div className="group border-2 border-foreground bg-background p-6 flex flex-col justify-between hover:bg-foreground hover:text-background transition-colors">
+      <div className="space-y-4">
 
-        <div className="space-y-6">
-          <div className="flex items-start justify-between">
-            <div className="p-3 bg-muted rounded-2xl border border-border group-hover:border-indigo-500/30 group-hover:bg-indigo-500/5 transition-all duration-500">
-              {repo.isExternal ? (
-                <Globe className="w-6 h-6 text-indigo-500" />
-              ) : (
-                <User className="w-6 h-6 text-amber-500" />
-              )}
-            </div>
-            {repo.isExternal && (
-              <span className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
-                External
-              </span>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <h3 className="text-xl font-bold text-foreground group-hover:text-indigo-500 transition-colors line-clamp-1">
+        <div className="flex justify-between items-start">
+          <div className="space-y-1">
+            <h3 className="text-lg font-black uppercase tracking-tighter line-clamp-1">
+              <span className="opacity-30 mr-2">[{String(index + 1).padStart(2, '0')}]</span>
               {repo.repoName}
             </h3>
-            <p className="text-muted-foreground text-sm font-medium">
-              Owned by <span className="text-muted-foreground font-semibold">{repo.owner}</span>
-            </p>
-          </div>
-
-          <div className="pt-2">
-            <div className="bg-muted/30 rounded-2xl p-4 border border-border/50 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-muted-foreground/50 uppercase tracking-tighter">Latest Contribution</span>
-                <span className="text-[10px] text-muted-foreground/70">
-                  {new Date(repo.latestPrDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed italic">
-                "{repo.latestPrTitle}"
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-60 flex items-center gap-1.5">
+                <User className="w-2.5 h-2.5" />
+                {repo.owner}
               </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-8 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex -space-x-1">
-              {[...Array(Math.min(repo.prCount, 3))].map((_, i) => (
-                <div key={i} className="w-6 h-6 rounded-full bg-indigo-500/10 border-2 border-background flex items-center justify-center">
-                  <GitPullRequest className="w-3 h-3 text-indigo-500" />
-                </div>
-              ))}
-              {repo.prCount > 3 && (
-                <div className="w-6 h-6 rounded-full bg-muted border-2 border-background flex items-center justify-center text-[10px] font-bold text-muted-foreground">
-                  +{repo.prCount - 3}
-                </div>
+              {repo.stars > 0 && (
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-60 flex items-center gap-1.5">
+                  <Globe className="w-2.5 h-2.5" />
+                  {repo.stars >= 1000 ? `${(repo.stars / 1000).toFixed(1)}K` : repo.stars} STARS
+                </p>
               )}
             </div>
-            <span className="text-sm font-bold text-foreground">
-              {repo.prCount} {repo.prCount === 1 ? 'PR' : 'PRs'}
-            </span>
           </div>
-
-          <a
-            href={repo.repoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2.5 bg-muted hover:bg-muted/80 rounded-xl border border-border transition-all active:scale-90"
-          >
-            <ExternalLink className="w-4 h-4 text-muted-foreground" />
-          </a>
+          <div className="text-[8px] font-black uppercase tracking-[0.2em] border border-foreground/30 px-2 py-0.5">
+            {repo.isExternal ? 'EXT' : 'OWN'}
+          </div>
         </div>
+
+        {repo.description && (
+          <p className="text-[10px] font-medium leading-tight opacity-50 line-clamp-2 uppercase">
+            {repo.description}
+          </p>
+        )}
+
+        <div className="pt-2">
+          <div className="border border-foreground/10 p-4 space-y-3 bg-foreground/[0.02]">
+            <div className="flex items-center justify-between">
+              <span className="text-[8px] font-black uppercase tracking-widest opacity-40">ENTRY:LOG</span>
+              <span className="text-[8px] font-black uppercase">
+                [{new Date(repo.latestPrDate).toLocaleDateString(undefined, { month: '2-digit', day: '2-digit', year: 'numeric' })}]
+              </span>
+            </div>
+            <p className="text-xs font-bold leading-tight uppercase tracking-tight italic">
+              "{repo.latestPrTitle}"
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="flex -space-x-1">
+            {[...Array(Math.min(repo.prCount, 3))].map((_, i) => (
+              <div key={i} className="w-5 h-5 border border-foreground bg-background flex items-center justify-center group-hover:bg-foreground">
+                <GitPullRequest className="w-3 h-3 group-hover:text-background" />
+              </div>
+            ))}
+          </div>
+          <span className="text-xs font-black uppercase">
+            {repo.prCount} {repo.prCount === 1 ? 'PR' : 'PRs'}
+          </span>
+        </div>
+
+        <a
+          href={repo.hasOpenPrs 
+            ? `https://github.com/${repo.id}/pulls/${username}`
+            : `https://github.com/${repo.id}/pulls?q=is:pr+author:${username}+is:closed`
+          }
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-2 border border-foreground hover:bg-background hover:text-foreground transition-colors bg-foreground text-background group-hover:bg-background group-hover:text-foreground"
+        >
+          <ExternalLink className="w-3 h-3" />
+        </a>
       </div>
     </div>
   );

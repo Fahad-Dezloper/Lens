@@ -1,178 +1,136 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@theme {
+  --font-pixel: "DotGothic16", sans-serif;
+  --font-geist-sans: var(--font-geist-sans);
+  --font-geist-mono: var(--font-geist-mono);
 
-:root {
-
-  /* Explicitly define font variables for theme tokens */
-  --font-body: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-pixel: var(--font-geist-pixel-square);
-  --header-footer: #ffffff;
-
-  /* Easing curves from web-animation-design */
-  --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
-  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
-  --background: #FFFDF3;
-  --foreground: #1a1a1a;
-  --card: var(--background);
-  --card-foreground: var(--foreground);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-
-  /* Register Geist fonts as theme tokens */
-  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
-  --font-pixel: var(--font-pixel);
-
-  /* Custom ease curves for tailwind 4 */
-  --ease-out-cubic: var(--ease-out-cubic);
-  --ease-out-quint: var(--ease-out-quint);
-  --ease-in-out-cubic: var(--ease-in-out-cubic);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-  --color-header-footer: var(--header-footer);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 }
 
-body {
-  min-height: 100vh;
-  /* Soft, warm ambient light for the new background */
-  background-image: 
-    radial-gradient(circle at 50% -20%, rgba(79, 70, 229, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.02) 0%, transparent 40%);
-  background-attachment: fixed;
-}
-
-/* Glassmorphism utilities - Enhanced for both themes */
-.glass-panel {
-  @apply bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-black/5 dark:border-white/10 shadow-sm transition-all duration-500;
-}
-
-.glass-panel:hover {
-  @apply bg-white/60 dark:bg-black/30 border-black/10 dark:border-white/20 shadow-lg;
-}
-
-/* For Framer Motion reduced motion handling */
-@media (prefers-reduced-motion: reduce) {
-  *, ::before, ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-::selection {
-  background: rgba(79, 70, 229, 0.3);
-  color: #fff;
+:root {
+  --background: #ffffff;
+  --foreground: #000000;
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+  --secondary: #ffffff;
+  --secondary-foreground: #000000;
+  --muted: #f4f4f5;
+  --muted-foreground: #52525b;
+  --accent: #ffffff;
+  --accent-foreground: #000000;
+  --destructive: #000000;
+  --destructive-foreground: #ffffff;
+  --border: #000000;
+  --input: #000000;
+  --ring: #000000;
+  --header-footer: #ffffff;
 }
 
 .dark {
-  --background: #0C1117;
-  --foreground: #F0F6FC;
-  --card: #262C36;
-  --card-foreground: #F0F6FC;
-  --popover: #0C1117;
-  --popover-foreground: #F0F6FC;
-  --primary: #0969da;
-  --primary-foreground: #F0F6FC;
-  --secondary: #262C36;
-  --secondary-foreground: #F0F6FC;
-  --muted: #262C36;
-  --muted-foreground: #8b949e;
-  --accent: #262C36;
-  --accent-foreground: #F0F6FC;
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: #30363d;
-  --input: #30363d;
-  --ring: #0969da;
-  --header-footer: #020408;
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #000000;
+  --card-foreground: #ffffff;
+  --popover: #000000;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #000000;
+  --secondary-foreground: #ffffff;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #000000;
+  --accent-foreground: #ffffff;
+  --destructive: #ffffff;
+  --destructive-foreground: #000000;
+  --border: #ffffff;
+  --input: #ffffff;
+  --ring: #ffffff;
+  --header-footer: #000000;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--foreground);
+    border-radius: 0px !important;
+    --tw-ring-offset-width: 0px !important;
+    --tw-ring-width: 0px !important;
+    box-shadow: none !important;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
   }
-  html {
-    @apply font-sans;
-  }
+}
+
+/* Simplified Structured Card */
+.glass-panel {
+  background-color: var(--background);
+  border: 2px solid var(--foreground);
+  box-shadow: none !important;
+  transition: none !important;
+  border-radius: 0px !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.glass-panel:hover {
+  background-color: var(--foreground);
+  color: var(--background);
+}
+
+/* Force no roundness on everything */
+.rounded-sm, .rounded-md, .rounded-lg, .rounded-xl, .rounded-2xl, .rounded-3xl, .rounded-4xl, .rounded-full {
+  border-radius: 0px !important;
+}
+
+/* Remove all blurs and fancy effects */
+.blur-2xl, .blur-3xl, .blur-xl, .blur-lg, .blur-md, .blur-sm {
+  filter: none !important;
+}
+
+/* Static feel */
+* {
+  transition: none !important;
+  animation: none !important;
 }
 
 .scrolll {
   overflow-y: auto;
 }
-.scrolll::-webkit-scrollbar{
-  display: none;
+
+/* Custom minimal scrollbar */
+.scrolll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrolll::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+.scrolll::-webkit-scrollbar-thumb {
+  background: var(--foreground);
 }
