@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface SearchContextType {
   hasData: boolean;
@@ -12,11 +13,20 @@ interface SearchContextType {
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
+  const searchParams = useSearchParams();
   const [hasData, setHasData] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
 
+  useEffect(() => {
+    if (searchParams.get("q")) {
+      setHasData(true);
+    }
+  }, []);
+
   return (
-    <SearchContext.Provider value={{ hasData, setHasData, isSearching, setIsSearching }}>
+    <SearchContext.Provider
+      value={{ hasData, setHasData, isSearching, setIsSearching }}
+    >
       {children}
     </SearchContext.Provider>
   );

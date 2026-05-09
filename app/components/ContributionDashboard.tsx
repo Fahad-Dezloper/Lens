@@ -7,18 +7,13 @@ import {
   RepoContribution,
   UserProfile,
 } from "../actions";
-import {
-  Search,
-  AlertCircle,
-  Globe,
-  User,
-} from "lucide-react";
+import { Search, AlertCircle, Globe, User } from "lucide-react";
 import { SearchForm } from "./SearchForm";
 import { useSearch } from "./SearchContext";
 import { UserCard } from "./UserCard";
 import { ProjectDirectory } from "./ProjectDirectory";
 import { DashboardSkeleton } from "./DashboardSkeleton";
-
+import { motion } from "motion/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ActionResponse } from "../actions";
 
@@ -52,13 +47,20 @@ export function ContributionDashboard({
   );
 
   useEffect(() => {
-    if (initialUsername && !initialData) {
-      handleSubmit(undefined, initialUsername);
-    } else if (initialData?.success) {
+    const query = searchParams.get("q");
+    if (query && query !== user?.login) {
+      handleSubmit(undefined, query);
+    } else if (!query) {
+      // Reset if no query
+      setData(null);
+      setUser(null);
+      setHasData(false);
+      setIsSearching(false);
+    } else if (data) {
       setHasData(true);
       setIsSearching(false);
     }
-  }, [initialUsername, initialData]);
+  }, [searchParams]);
 
   const handleSubmit = async (
     e?: React.FormEvent,
@@ -68,16 +70,18 @@ export function ContributionDashboard({
     const finalUsername = selectedUsername || username;
     if (!finalUsername.trim()) return;
 
-    // Update URL
-    const params = new URLSearchParams(searchParams);
-    params.set("q", finalUsername.trim());
-    router.push(`?${params.toString()}`, { scroll: false });
+    const currentQuery = searchParams.get("q");
+    if (currentQuery !== finalUsername.trim()) {
+      const params = new URLSearchParams(searchParams);
+      params.set("q", finalUsername.trim());
+      router.push(`?${params.toString()}`, { scroll: false });
+    }
 
     setLoading(true);
     setError(null);
     setData(null);
     setUser(null);
-    setHasData(false);
+    // Don't setHasData(false) here if we are already in result mode
     setIsSearching(true);
     setFilter("external");
     setTotalPrs(null);
@@ -126,15 +130,20 @@ export function ContributionDashboard({
     { id: "owned", label: "My Projects", icon: User, count: stats?.ownedRepos },
   ];
 
-  const showHero = !hasData && !isSearching && !loading;
+  const showHero = !data && !isSearching && !loading && !error;
 
   return (
-    <div className="w-full bg-[#0C1117] font-sans">
+    <div className="w-full bg-[#0C1117] font-sans min-h-[80vh]">
       <div
-        className={`flex flex-col items-center w-full transition-all duration-500 ease-in-out ${showHero ? "justify-center min-h-[60vh] mt-[-5vh]" : ""}`}
+        className={`flex flex-col items-center w-full ${showHero ? "justify-center min-h-[60vh] mt-[-5vh]" : ""}`}
       >
         {showHero && (
-          <div className="flex flex-col items-center text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.25, filter: "blur(4px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: 0.25, filter: "blur(4px)" }}
+            className="flex flex-col items-center text-center"
+          >
             <h1 className="text-[40px] md:text-[76px] leading-[1.05] font-bold text-foreground tracking-tight mb-8 max-w-5xl">
               Explore people's
               <br />
@@ -145,13 +154,17 @@ export function ContributionDashboard({
             <p className="text-muted-foreground text-[16px] md:text-[19px] mb-12 font-medium max-w-2xl leading-relaxed">
               Visualize the open source impact of any GitHub developer.
             </p>
-          </div>
+          </motion.div>
         )}
 
         {showHero && <SearchForm variant="hero" initialValue={username} />}
       </div>
 
-      {(loading || isSearching) && !data && <DashboardSkeleton />}
+      {(loading || isSearching) && !data && (
+        <div className="w-full px-4">
+          <DashboardSkeleton />
+        </div>
+      )}
 
       {error && (
         <div className="flex items-center gap-3 text-foreground bg-background px-6 py-4 border-2 border-foreground max-w-lg mx-auto mb-8">
@@ -161,15 +174,17 @@ export function ContributionDashboard({
       )}
 
       {data && user && (
-        <div className="flex flex-col md:flex-row gap-6 mt-12">
-          <UserCard user={user} stats={stats} externalPrs={externalPrs} />
-          <ProjectDirectory
-            filteredData={filteredData}
-            filter={filter}
-            setFilter={setFilter}
-            tabs={tabs}
-            username={user.login}
-          />
+        <div className="w-full px-4">
+          <div className="flex flex-col md:flex-row gap-6 pb-20">
+            <UserCard user={user} stats={stats} externalPrs={externalPrs} />
+            <ProjectDirectory
+              filteredData={filteredData}
+              filter={filter}
+              setFilter={setFilter}
+              tabs={tabs}
+              username={user.login}
+            />
+          </div>
         </div>
       )}
     </div>
