@@ -170,11 +170,11 @@ export function ContributionDashboard({
       <div className={`flex flex-col items-center w-full transition-all duration-500 ease-in-out ${data ? "mb-12" : "justify-center min-h-[60vh] mt-[-5vh]"}`}>
         {!data && (
           <div className="flex flex-col items-center text-center">
-            <h1 className="text-[48px] md:text-[56px] leading-[1.05] font-bold text-white tracking-tight mb-2">
+            <h1 className="text-[48px] md:text-[56px] leading-[1.05] font-bold text-foreground tracking-tight mb-2">
               Find a domain for<br />
-              <span className="text-white/60">your passion project.</span>
+              <span className="text-foreground/60">your passion project.</span>
             </h1>
-            <p className="text-white/50 text-[15px] mt-4 mb-8 font-medium">
+            <p className="text-foreground/50 text-[15px] mt-4 mb-8 font-medium">
               Fast. At-cost. Private.
             </p>
           </div>
@@ -185,39 +185,39 @@ export function ContributionDashboard({
           className={`w-full relative group ${data ? "max-w-2xl" : "max-w-[560px]"}`}
           ref={searchRef}
         >
-          <div className="relative flex items-center bg-[#0a0a0a] border border-white/10 rounded-xl pr-4 pl-4 transition-all hover:border-white/20 focus-within:border-white/30 focus-within:bg-[#111] h-[52px] shadow-2xl">
-            <Search className="w-4 h-4 text-white/40 mr-3" />
+          <div className="relative flex items-center bg-card border border-foreground/10 rounded-xl pr-4 pl-4 transition-all hover:border-foreground/20 focus-within:border-foreground/30 focus-within:bg-muted/50 h-[52px] shadow-md">
+            <Search className="w-4 h-4 text-foreground/40 mr-3" />
             <input
               type="text"
               placeholder="Search a domain or describe your idea..."
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               onFocus={() => username.length >= 2 && setShowSuggestions(true)}
-              className="w-full bg-transparent border-none outline-none text-white text-[14px] placeholder:text-white/30 h-full font-medium"
+              className="w-full bg-transparent border-none outline-none text-foreground text-[14px] placeholder:text-foreground/30 h-full font-medium"
               spellCheck={false}
             />
           </div>
 
           {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-[#111] border border-white/10 rounded-xl overflow-hidden shadow-2xl z-40">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-muted/50 border border-foreground/10 rounded-xl overflow-hidden shadow-md z-40">
               <div className="p-2">
                 {suggestions.map((suggestion) => (
                   <button
                     key={suggestion.login}
                     type="button"
                     onClick={() => handleSubmit(undefined, suggestion.login)}
-                    className="w-full flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg transition-colors group text-left"
+                    className="w-full flex items-center gap-3 p-2 hover:bg-foreground/5 rounded-lg transition-colors group text-left"
                   >
                     <img
                       src={suggestion.avatarUrl}
                       alt={suggestion.login}
-                      className="w-8 h-8 rounded-full border border-white/10"
+                      className="w-8 h-8 rounded-full border border-foreground/10"
                     />
                     <div className="flex-1">
-                      <p className="text-[14px] font-medium text-white">
+                      <p className="text-[14px] font-medium text-foreground">
                         {suggestion.login}
                       </p>
-                      <p className="text-[12px] text-white/50">
+                      <p className="text-[12px] text-foreground/50">
                         View contributions
                       </p>
                     </div>
@@ -239,29 +239,29 @@ export function ContributionDashboard({
       {data && user && (
         <div className="flex flex-col  md:flex-row gap-6">
           <div className="flex flex-col gap-6 w-full md:w-[350px] shrink-0">
-            <div className="border border-white/10 p-8 flex flex-col items-center text-center space-y-6 bg-[#0a0a0a] rounded-xl relative hover:border-white/20 transition-colors">
+            <div className="border border-foreground/10 p-8 flex flex-col items-center text-center space-y-6 bg-card rounded-xl relative hover:border-foreground/20 transition-colors">
               <div className="relative">
                 <img
                   src={user.avatarUrl}
                   alt={user.login}
-                  className="w-32 h-32 border border-white/10 rounded-full"
+                  className="w-32 h-32 border border-foreground/10 rounded-full"
                 />
               </div>
 
               <div className="space-y-3 w-full">
                 <div className="space-y-1">
                   {user.name && (
-                    <h1 className="text-2xl font-bold text-white tracking-tight leading-none">
+                    <h1 className="text-2xl font-bold text-foreground tracking-tight leading-none">
                       {user.name}
                     </h1>
                   )}
-                  <h2 className="text-lg font-medium text-white/50">
+                  <h2 className="text-lg font-medium text-foreground/50">
                     @{user.login}
                   </h2>
                 </div>
 
                 {user.bio && (
-                  <p className="text-sm text-white/60 leading-relaxed max-w-xs mx-auto px-4 border-t border-b border-white/10 py-3">
+                  <p className="text-sm text-foreground/60 leading-relaxed max-w-xs mx-auto px-4 border-t border-b border-foreground/10 py-3">
                     {user.bio}
                   </p>
                 )}
@@ -271,7 +271,7 @@ export function ContributionDashboard({
                     href={user.htmlUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-white/70 hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center gap-1.5 text-xs font-medium border border-white/10 rounded-lg px-3 py-1.5"
+                    className="text-foreground/70 hover:bg-foreground/10 hover:text-foreground transition-colors flex items-center justify-center gap-1.5 text-xs font-medium border border-foreground/10 rounded-lg px-3 py-1.5"
                   >
                     <Code2 className="w-3.5 h-3.5" />
                     GitHub
@@ -282,7 +282,7 @@ export function ContributionDashboard({
                       href={`https://x.com/${user.twitterUsername}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-white/70 hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center gap-1.5 text-xs font-medium border border-white/10 rounded-lg px-3 py-1.5"
+                      className="text-foreground/70 hover:bg-foreground/10 hover:text-foreground transition-colors flex items-center justify-center gap-1.5 text-xs font-medium border border-foreground/10 rounded-lg px-3 py-1.5"
                     >
                       Twitter
                     </a>
@@ -297,7 +297,7 @@ export function ContributionDashboard({
                       }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-white/70 hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center gap-1.5 text-xs font-medium border border-white/10 rounded-lg px-3 py-1.5"
+                      className="text-foreground/70 hover:bg-foreground/10 hover:text-foreground transition-colors flex items-center justify-center gap-1.5 text-xs font-medium border border-foreground/10 rounded-lg px-3 py-1.5"
                     >
                       Website
                     </a>
@@ -306,7 +306,7 @@ export function ContributionDashboard({
                   {user.email && (
                     <a
                       href={`mailto:${user.email}`}
-                      className="text-white/70 hover:bg-white/10 hover:text-white transition-colors flex items-center justify-center gap-1.5 text-xs font-medium border border-white/10 rounded-lg px-3 py-1.5"
+                      className="text-foreground/70 hover:bg-foreground/10 hover:text-foreground transition-colors flex items-center justify-center gap-1.5 text-xs font-medium border border-foreground/10 rounded-lg px-3 py-1.5"
                     >
                       Email
                     </a>
@@ -314,20 +314,20 @@ export function ContributionDashboard({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-2 w-full pt-4 border-t border-white/10">
+              <div className="grid grid-cols-1 gap-2 w-full pt-4 border-t border-foreground/10">
                 {user.location && (
-                  <div className="flex items-center gap-2 text-xs text-white/60 font-medium">
+                  <div className="flex items-center gap-2 text-xs text-foreground/60 font-medium">
                     <MapPin className="w-3.5 h-3.5" />
                     <span className="truncate">{user.location}</span>
                   </div>
                 )}
                 {user.company && (
-                  <div className="flex items-center gap-2 text-xs text-white/60 font-medium">
+                  <div className="flex items-center gap-2 text-xs text-foreground/60 font-medium">
                     <Building2 className="w-3.5 h-3.5" />
                     <span className="truncate">{user.company}</span>
                   </div>
                 )}
-                <div className="flex items-center gap-2 text-xs text-white/60 font-medium">
+                <div className="flex items-center gap-2 text-xs text-foreground/60 font-medium">
                   <Users className="w-3.5 h-3.5" />
                   <span>{user.followers?.toLocaleString()} followers</span>
                 </div>
@@ -408,7 +408,7 @@ export function ContributionDashboard({
           </div>
 
           <div className="flex flex-col w-full gap-6">
-            <div className="flex bg-[#111] border border-white/10 w-fit rounded-lg p-1">
+            <div className="flex bg-muted/50 border border-foreground/10 w-fit rounded-lg p-1">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = filter === tab.id;
@@ -417,13 +417,13 @@ export function ContributionDashboard({
                     key={tab.id}
                     onClick={() => setFilter(tab.id as FilterType)}
                     className={`px-4 py-2 text-xs font-medium transition-colors flex items-center gap-2 rounded-md
-                      ${isActive ? "bg-white/10 text-white" : "text-white/60 hover:bg-white/5 hover:text-white"}`}
+                      ${isActive ? "bg-foreground/10 text-foreground" : "text-foreground/60 hover:bg-foreground/5 hover:text-foreground"}`}
                   >
                     <Icon className="w-3.5 h-3.5" />
                     <span>{tab.label}</span>
                     {tab.count !== undefined && (
                       <span
-                        className={`px-1.5 py-0.5 rounded-full text-[10px] ${isActive ? "bg-white text-black" : "bg-white/10 text-white/80"}`}
+                        className={`px-1.5 py-0.5 rounded-full text-[10px] ${isActive ? "bg-foreground text-background" : "bg-foreground/10 text-foreground/80"}`}
                       >
                         {tab.count}
                       </span>
@@ -474,14 +474,14 @@ function StatCard({
   icon: any;
 }) {
   return (
-    <div className="border border-white/10 p-6 flex flex-col justify-between bg-[#0a0a0a] rounded-xl hover:border-white/20 transition-all">
-      <div className="flex items-center justify-between text-white/50">
+    <div className="border border-foreground/10 p-6 flex flex-col justify-between bg-card rounded-xl hover:border-foreground/20 transition-all">
+      <div className="flex items-center justify-between text-foreground/50">
         <p className="text-sm font-medium">
           {label}
         </p>
         <Icon className="w-5 h-5" />
       </div>
-      <p className="text-4xl font-bold text-white tabular-nums mt-4">
+      <p className="text-4xl font-bold text-foreground tabular-nums mt-4">
         {value.toLocaleString()}
       </p>
     </div>
