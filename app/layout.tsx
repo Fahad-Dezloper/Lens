@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { GeistPixelSquare } from 'geist/font/pixel';
+import { GeistPixelSquare } from "geist/font/pixel";
 import "./globals.css";
 import Topbar from "./components/Topbar";
 import Footer from "./components/Footer";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SearchProvider } from "./components/SearchContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,17 +36,17 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="h-screen flex flex-col overflow-hidden antialiased font-sans">
-            <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-        <Topbar />
-        <main className="flex-1 scrolll">
-          {children}
-        </main>
-        <Footer />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SearchProvider>
+            <Topbar />
+            <main className="flex-1 scrolll">{children}</main>
+            <Footer />
+          </SearchProvider>
         </ThemeProvider>
       </body>
     </html>
