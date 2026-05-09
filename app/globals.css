@@ -73,13 +73,6 @@
 }
 
 @layer base {
-  * {
-    border-color: var(--foreground);
-    border-radius: 0px !important;
-    --tw-ring-offset-width: 0px !important;
-    --tw-ring-width: 0px !important;
-    box-shadow: none !important;
-  }
   body {
     background-color: var(--background);
     color: var(--foreground);
@@ -89,33 +82,7 @@
 /* Simplified Structured Card */
 .glass-panel {
   background-color: var(--background);
-  border: 2px solid var(--foreground);
-  box-shadow: none !important;
-  transition: none !important;
-  border-radius: 0px !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-.glass-panel:hover {
-  background-color: var(--foreground);
-  color: var(--background);
-}
-
-/* Force no roundness on everything */
-.rounded-sm, .rounded-md, .rounded-lg, .rounded-xl, .rounded-2xl, .rounded-3xl, .rounded-4xl, .rounded-full {
-  border-radius: 0px !important;
-}
-
-/* Remove all blurs and fancy effects */
-.blur-2xl, .blur-3xl, .blur-xl, .blur-lg, .blur-md, .blur-sm {
-  filter: none !important;
-}
-
-/* Static feel */
-* {
-  transition: none !important;
-  animation: none !important;
+  border: 1px solid var(--border);
 }
 
 .scrolll {
@@ -128,9 +95,9 @@
 }
 
 .scrolll::-webkit-scrollbar-track {
-  background: var(--background);
+  background: transparent;
 }
 
 .scrolll::-webkit-scrollbar-thumb {
-  background: var(--foreground);
+  background: var(--border);
 }

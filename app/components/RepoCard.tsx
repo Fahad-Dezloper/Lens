@@ -11,49 +11,48 @@ interface RepoCardProps {
 
 export function RepoCard({ repo, index, username }: RepoCardProps) {
   return (
-    <div className="group border-2 border-foreground bg-background p-6 flex flex-col justify-between hover:bg-foreground hover:text-background transition-colors">
+    <div className="group border border-white/10 bg-[#0a0a0a] rounded-xl p-6 flex flex-col justify-between hover:border-white/20 transition-all hover:shadow-2xl">
       <div className="space-y-4">
 
         <div className="flex justify-between items-start">
           <div className="space-y-1">
-            <h3 className="text-lg font-black uppercase tracking-tighter line-clamp-1">
-              {/* <span className="opacity-30 mr-2">[{String(index + 1).padStart(2, '0')}]</span> */}
+            <h3 className="text-lg font-semibold text-white tracking-tight line-clamp-1">
               {repo.repoName}
             </h3>
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-[10px] font-black uppercase tracking-widest opacity-60 flex items-center gap-1.5">
-                <User className="w-2.5 h-2.5" />
+              <p className="text-xs font-medium text-white/50 flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5" />
                 {repo.owner}
               </p>
               {repo.stars > 0 && (
-                <p className="text-[10px] font-black uppercase tracking-widest opacity-60 flex items-center gap-1.5">
-                  <Globe className="w-2.5 h-2.5" />
-                  {repo.stars >= 1000 ? `${(repo.stars / 1000).toFixed(1)}K` : repo.stars} STARS
+                <p className="text-xs font-medium text-white/50 flex items-center gap-1.5">
+                  <Globe className="w-3.5 h-3.5" />
+                  {repo.stars >= 1000 ? `${(repo.stars / 1000).toFixed(1)}K` : repo.stars}
                 </p>
               )}
             </div>
           </div>
-          <div className="text-[8px] font-black uppercase tracking-[0.2em] border border-foreground/30 px-2 py-0.5">
-            {repo.isExternal ? 'EXT' : 'OWN'}
+          <div className="text-[10px] font-semibold text-white/60 bg-white/5 border border-white/10 rounded-full px-2.5 py-1">
+            {repo.isExternal ? 'External' : 'Owned'}
           </div>
         </div>
 
         {repo.description && (
-          <p className="text-[10px] font-medium leading-tight opacity-50 line-clamp-2 uppercase">
+          <p className="text-sm font-medium text-white/40 leading-relaxed line-clamp-2">
             {repo.description}
           </p>
         )}
 
         <div className="pt-2">
-          <div className="border border-foreground/10 p-4 space-y-3 bg-foreground/[0.02]">
+          <div className="border border-white/5 p-4 rounded-lg space-y-2 bg-white/[0.02]">
             <div className="flex items-center justify-between">
-              <span className="text-[8px] font-black uppercase tracking-widest opacity-40">ENTRY:LOG</span>
-              <span className="text-[8px] font-black uppercase">
-                [{new Date(repo.latestPrDate).toLocaleDateString(undefined, { month: '2-digit', day: '2-digit', year: 'numeric' })}]
+              <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider">Latest PR</span>
+              <span className="text-[11px] font-medium text-white/60">
+                {new Date(repo.latestPrDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               </span>
             </div>
-            <p className="text-xs font-bold leading-tight uppercase tracking-tight italic">
-              "{repo.latestPrTitle}"
+            <p className="text-sm font-medium text-white/80 leading-snug">
+              {repo.latestPrTitle}
             </p>
           </div>
         </div>
@@ -61,15 +60,15 @@ export function RepoCard({ repo, index, username }: RepoCardProps) {
 
       <div className="mt-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex -space-x-1">
+          <div className="flex -space-x-1.5">
             {[...Array(Math.min(repo.prCount, 3))].map((_, i) => (
-              <div key={i} className="w-5 h-5 border border-foreground bg-background flex items-center justify-center group-hover:bg-foreground">
-                <GitPullRequest className="w-3 h-3 group-hover:text-background" />
+              <div key={i} className="w-7 h-7 rounded-full border border-white/10 bg-[#111] flex items-center justify-center relative z-10">
+                <GitPullRequest className="w-3.5 h-3.5 text-white/60" />
               </div>
             ))}
           </div>
-          <span className="text-xs font-black uppercase">
-            {repo.prCount} {repo.prCount === 1 ? 'PR' : 'PRs'}
+          <span className="text-sm font-medium text-white/70 ml-1">
+            {repo.prCount} {repo.prCount === 1 ? 'Pull Request' : 'Pull Requests'}
           </span>
         </div>
 
@@ -80,9 +79,9 @@ export function RepoCard({ repo, index, username }: RepoCardProps) {
           }
           target="_blank"
           rel="noopener noreferrer"
-          className="p-2 border border-foreground hover:bg-background hover:text-foreground transition-colors bg-foreground text-background group-hover:bg-background group-hover:text-foreground"
+          className="p-2.5 rounded-lg border border-white/10 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
         >
-          <ExternalLink className="w-3 h-3" />
+          <ExternalLink className="w-4 h-4" />
         </a>
       </div>
     </div>
