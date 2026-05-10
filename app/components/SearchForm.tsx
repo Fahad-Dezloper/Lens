@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { searchUsers, UserProfile } from "../actions";
 import { useSearch } from "./SearchContext";
@@ -26,7 +26,7 @@ export function SearchForm({
   const [loading, setLoading] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  const { setIsSearching, setHasData } = useSearch();
+  const { setIsSearching, setHasData, setSearchQuery } = useSearch();
 
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -73,6 +73,7 @@ export function SearchForm({
     setShowSuggestions(false);
     setIsSearching(true);
     setHasData(false);
+    setSearchQuery(finalUsername.trim());
 
     if (onSearch) {
       onSearch(finalUsername.trim());

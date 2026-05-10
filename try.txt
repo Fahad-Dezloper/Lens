@@ -5,3 +5,11 @@ open source contribution repos widget sdk ui component
 show important repos first
 
 add filter between latest contribution and highly reputed repo contribution
+
+
+//////
+more ui structure and color improvement
+animation of searcbox can be more smoother going from one state to another
+headiing and text disappear animation need to add smooth. 
+
+platform should feel really good to use

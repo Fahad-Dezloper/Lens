@@ -13,7 +13,7 @@ import { useSearch } from "./SearchContext";
 import { UserCard } from "./UserCard";
 import { ProjectDirectory } from "./ProjectDirectory";
 import { DashboardSkeleton } from "./DashboardSkeleton";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ActionResponse } from "../actions";
 
@@ -28,7 +28,8 @@ export function ContributionDashboard({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { hasData, setHasData, isSearching, setIsSearching } = useSearch();
+  const { hasData, setHasData, isSearching, setIsSearching, searchQuery } =
+    useSearch();
   const [username, setUsername] = useState(initialUsername || "");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<RepoContribution[] | null>(
@@ -134,31 +135,44 @@ export function ContributionDashboard({
 
   return (
     <div className="w-full bg-[#0C1117] font-sans min-h-[80vh]">
-      <div
+      <motion.div
+        layout
         className={`flex flex-col items-center w-full ${showHero ? "justify-center min-h-[60vh] mt-[-5vh]" : ""}`}
       >
-        {showHero && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.25, filter: "blur(4px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, scale: 0.25, filter: "blur(4px)" }}
-            className="flex flex-col items-center text-center"
-          >
-            <h1 className="text-[40px] md:text-[76px] leading-[1.05] font-bold text-foreground tracking-tight mb-8 max-w-5xl">
-              Explore people's
-              <br />
-              <span className="text-muted-foreground">
-                open source contributions.
-              </span>
-            </h1>
-            <p className="text-muted-foreground text-[16px] md:text-[19px] mb-12 font-medium max-w-2xl leading-relaxed">
-              Visualize the open source impact of any GitHub developer.
-            </p>
-          </motion.div>
-        )}
+        <AnimatePresence>
+          {showHero && (
+            <motion.div
+              key="hero-content"
+              initial={{ opacity: 0, filter: "blur(10px)" }}
+              animate={{ opacity: 1, filter: "blur(0px)", y: 10 }}
+              exit={{ opacity: 0, filter: "blur(10px)", y: -20 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="flex flex-col items-center text-center"
+            >
+              <h1 className="text-[40px] md:text-[76px] leading-[1.05] font-bold text-foreground tracking-tight mb-8 max-w-5xl">
+                Explore people's
+                <br />
+                <span className="text-muted-foreground">
+                  open source contributions.
+                </span>
+              </h1>
+              <p className="text-muted-foreground text-[16px] md:text-[19px] mb-12 font-medium max-w-2xl leading-relaxed">
+                Visualize the open source impact of any GitHub developer.
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {showHero && <SearchForm variant="hero" initialValue={username} />}
-      </div>
+        <AnimatePresence>
+          {showHero && (
+            <SearchForm
+              key="hero-search"
+              variant="hero"
+              initialValue={searchQuery || username}
+            />
+          )}
+        </AnimatePresence>
+      </motion.div>
 
       {(loading || isSearching) && !data && (
         <div className="w-full px-4">

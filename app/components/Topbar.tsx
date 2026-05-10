@@ -4,11 +4,11 @@ import { ModeToggle } from "./ThemeToggler";
 import { SearchForm } from "./SearchForm";
 import { useSearch } from "./SearchContext";
 import { useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "motion/react";
 
 const Topbar = () => {
-  const { hasData, isSearching } = useSearch();
+  const { hasData, isSearching, searchQuery } = useSearch();
   const searchParams = useSearchParams();
-  const query = searchParams.get("q") || "";
 
   return (
     <div className="w-full px-6 py-4 bg-[#020408] border-b border-border flex justify-between items-center text-sm transition-colors duration-300">
@@ -25,7 +25,15 @@ const Topbar = () => {
       </div>
 
       <div className="flex-1 flex justify-center px-8">
-        {(hasData || isSearching) && <SearchForm variant="topbar" initialValue={query} />}
+        <AnimatePresence mode="wait">
+          {(hasData || isSearching) && (
+            <SearchForm
+              key="topbar-search"
+              variant="topbar"
+              initialValue={searchQuery}
+            />
+          )}
+        </AnimatePresence>
       </div>
 
       <div className="flex gap-4 items-center text-muted-foreground shrink-0">
